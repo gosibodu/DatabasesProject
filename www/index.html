@@ -365,19 +365,18 @@
         mat4.rotate(mvMatrix, degToRad(yRot), [0, 1, 0]);
         mat4.rotate(mvMatrix, degToRad(zRot), [0, 0, 1]);
         
+        if (blinktime < 100) {
+          for(var i in blocks) {
+            if (blocks[i].xpos == selX && blocks[i].ypos == selY && blocks[i].zpos == selZ) {
+              blocks[i] = new Block(-1, selX, selY, selZ);
+            }
+          }
+        }
+        
         for(var i in blocks) {
           blocks[i].draw();
         }
 
-        var select;
-        
-        if (blinktime < 100) {
-          select = new Block(-1, selX, selY, selZ);
-          select.draw();
-        } else {
-          delete select;
-        }
-        
     }
 
     
@@ -400,6 +399,7 @@
 
     function tick() {
         requestAnimFrame(tick);
+        initWorldObjects();
         drawScene();
         animate();
     }
