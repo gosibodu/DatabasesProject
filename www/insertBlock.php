@@ -5,4 +5,10 @@
   mysql_select_db($mysql_database) or die(mysql_error());
 	
 	$result = mysql_query("INSERT INTO BlockInstance VALUES($X, $Y, $Z, $objectID)");
+	
+	if($result == false)
+	{
+		echo "Error! Insert failed!"
+	}
+	}
 ?>
