@@ -337,7 +337,7 @@
         {
           blocks[i] = new Block(blocklist[i].id, blocklist[i].xpos, blocklist[i].ypos, blocklist[i].zpos)
         if (blinktime < 100) {
-            if (blocks[i].xpos == selX && blocks[i].ypos == selY && blocks[i].zpos == selZ) {
+            if (blocks[i].x == selX && blocks[i].y == selY && blocks[i].z == selZ) {
               blocks[i] = new Block(-1, selX, selY, selZ);
           }
         }
@@ -377,7 +377,42 @@
 
     }
 
+    var currentlyPressedKeys;
     
+    function handleKeyDown(event) {
+      currentlyPressedKeys[event.keyCode] = true;
+    }
+
+    function handleKeyUp(event) {
+      currentlyPressedKeys[event.keyCode] = false;
+    }
+
+    function handleKeys() {
+      if (currentlyPressedKeys[33]) {
+        // Page Up
+        selZ += 1;
+      }
+      if (currentlyPressedKeys[34]) {
+        // Page Down
+        selZ -= 1;
+      }
+      if (currentlyPressedKeys[37]) {
+        // Left cursor key
+        selY -= 1;
+      }
+      if (currentlyPressedKeys[39]) {
+        // Right cursor key
+        selY += 1;
+      }
+      if (currentlyPressedKeys[38]) {
+        // Up cursor key
+        selX -= 1;
+      }
+      if (currentlyPressedKeys[40]) {
+        // Down cursor key
+        selX += 1;
+      }
+    }
 
     var lastTime = 0;
     function animate() {
@@ -397,12 +432,12 @@
 
     function tick() {
         requestAnimFrame(tick);
+        handleKeys();
         initWorldObjects();
         drawScene();
         animate();
     }
-
-
+    
     function webGLStart() {
         var canvas = document.getElementById("main_window");
         initGL(canvas);
@@ -413,7 +448,10 @@
 
         gl.clearColor(0.0, 0.0, 0.0, 1.0);
         gl.enable(gl.DEPTH_TEST);
-
+        
+        document.onkeydown = handleKeyDown;
+        document.onkeyup = handleKeyUp;
+    
         tick();
     }
 
