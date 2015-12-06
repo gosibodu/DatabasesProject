@@ -332,13 +332,13 @@
 					blocklist[i] = {xpos: rowdata[0], ypos: rowdata[1], zpos: rowdata[2], id:rowdata[3]}
 				}
 				
+			
+        for (var i in blocklist)
+        {
+          blocks[i] = new Block(blocklist[i].id, blocklist[i].xpos, blocklist[i].ypos, blocklist[i].zpos)
+        }
       } 
 			});
-			
-      for (var i in blocklist)
-      {
-        blocks[i] = new Block(blocklist[i].id, blocklist[i].xpos, blocklist[i].ypos, blocklist[i].zpos)
-      }
       
     }
     
