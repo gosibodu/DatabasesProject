@@ -339,7 +339,7 @@
         }
       } 
 			});
-      
+      $.('#blockname').html("dirt");
     }
     
     
@@ -415,44 +415,13 @@
     <li>Gbenga Osibodu</li>
     <li>Joey Kipp</li>
     <li>David Strickland</li>
-  </ul><button id="testbutton" type="button" onclick='test(); console.log("start test");'>TESTER</button>
+  </ul>
 
-	<div id="output"></div>
-  </br>
-  <canvas id="main_window" style="border: 10px solid #AEAEAE;" width="500" height="500"/>
-	</br>	  
-	
-	<script id="source" language="javascript" type="text/javascript">
+	<div>
+  
+    <canvas id="main_window" style="border: 10px solid #AEAEAE;" width="500" height="500"/>
+	 
+	<div>
+  <div id="blockname"></div>
 
-  function test() 
-  {
-    //-----------------------------------------------------------------------
-    // 2) Send a http request with AJAX http://api.jquery.com/jQuery.ajax/
-    //-----------------------------------------------------------------------
-    $.ajax({                                      
-      url: 'getmap.php',                  //the script to call to get data          
-      data: "",                        //you can insert url argumnets here to pass to api.php
-                                       //for example "id=5&parent=6"
-      dataType: 'json',                //data format      
-      success: function(data)          //on recieve of reply
-      {
-        var out;
-        
-				for (var i in data) {
-					out += "<p>";
-					rowdata = data[i];
-					
-					for( var j in rowdata)
-					{
-						out += rowdata[j] + " ";
-					}
-					out += "</p>";
-				}
-				
-				$("#output").html(out);
-      } 
-    });
-  }; 
-
-  </script>
 </body>
