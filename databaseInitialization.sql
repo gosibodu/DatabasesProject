@@ -12,7 +12,7 @@ CREATE TABLE Player
 CREATE TABLE Object
 (
 	objectID integer Primary Key,
-	class integer check(0 <= class)  /* 0 = block, 1 = item  */ 
+	class integer check(0 <= class)  # 0 = block, 1 = item   
 	name varchar (20)
 );
 
@@ -22,7 +22,7 @@ CREATE TABLE PlayerInventory
 (
 	playerName string REFERENCES Player,
 	inventoryID integer,
-	slot# integer check(slot#>=0),
+	slotNum integer check(slotNum>=0),
 	item integer REFERENCES Object(objectID) default(NULL)),
 	quantity integer (quantity>=0),
 	Primary Key (playerName,inventoryID,slot#)	
@@ -34,7 +34,7 @@ CREATE TABLE BlockInventory
 	ypos integer,
 	zpos integer,
 	inventoryID integer,
-	slot# integer check(slot#>=0),
+	slotNum integer check(slotNum>=0),
 	item integer,
 	quantity integer check(quantity>=0),
 	Primary Key (xpos, ypos, zpos, inventoryID, slot#)
