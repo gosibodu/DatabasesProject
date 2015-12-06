@@ -429,12 +429,13 @@
       dataType: 'json',                //data format      
       success: function(data)          //on recieve of reply
       {
-        var id = data[0];              //get id
-        var vname = data[1];           //get name
+        var out;
         
-				for (var i = 0; i < data.length; i++) {
-					document.getElementById("output").innerHTML += "<p>" + data[i] + "</p>";
-				}
+				&.each(data, function(index, item) {
+					out += "<p>" + item + "</p>";
+				});
+				
+				$("#output").html(out);
       } 
     });
   }; 
