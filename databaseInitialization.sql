@@ -129,3 +129,6 @@ Insert Into Effect(objectID, effectType, effectDuration) values
 	(13, NULL, NULL),
 	(14, NULL, NULL),
 	(15, NULL, NULL);
+
+Insert Into Player(name, health, oxygen, experience, xpos, ypos, zpos) values
+	("Steve", 100, 100, 0, 2, 2, 1);
