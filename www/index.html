@@ -336,6 +336,11 @@
         for (var i in blocklist)
         {
           blocks[i] = new Block(blocklist[i].id, blocklist[i].xpos, blocklist[i].ypos, blocklist[i].zpos)
+        if (blinktime < 100) {
+            if (blocks[i].xpos == selX && blocks[i].ypos == selY && blocks[i].zpos == selZ) {
+              blocks[i] = new Block(-1, selX, selY, selZ);
+          }
+        }
         }
       } 
 			});
@@ -365,13 +370,6 @@
         mat4.rotate(mvMatrix, degToRad(yRot), [0, 1, 0]);
         mat4.rotate(mvMatrix, degToRad(zRot), [0, 0, 1]);
         
-        if (blinktime < 100) {
-          for(var i in blocks) {
-            if (blocks[i].xpos == selX && blocks[i].ypos == selY && blocks[i].zpos == selZ) {
-              blocks[i] = new Block(-1, selX, selY, selZ);
-            }
-          }
-        }
         
         for(var i in blocks) {
           blocks[i].draw();
