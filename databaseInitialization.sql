@@ -12,7 +12,8 @@ CREATE TABLE Player
 CREATE TABLE Object
 (
 	objectID integer Primary Key,
-	class integer check(0 <= class)  /* 0 = block, 1 = item  */ 
+	class integer check(0 <= class)  # 0 = block, 1 = item   
+	name varchar (20)
 );
 
 ALTER TABLE Object ADD check(class <= 1);
@@ -21,7 +22,7 @@ CREATE TABLE PlayerInventory
 (
 	playerName string REFERENCES Player,
 	inventoryID integer,
-	slot# integer check(slot#>=0),
+	slotNum integer check(slotNum>=0),
 	item integer REFERENCES Object(objectID) default(NULL)),
 	quantity integer (quantity>=0),
 	Primary Key (playerName,inventoryID,slot#)	
@@ -33,7 +34,7 @@ CREATE TABLE BlockInventory
 	ypos integer,
 	zpos integer,
 	inventoryID integer,
-	slot# integer check(slot#>=0),
+	slotNum integer check(slotNum>=0),
 	item integer,
 	quantity integer check(quantity>=0),
 	Primary Key (xpos, ypos, zpos, inventoryID, slot#)
@@ -77,44 +78,44 @@ CREATE TABLE Effect
 );
 
 Insert Into Object(objectID, class) values
-	(0, 0),
-	(1, 0),
-	(2, 0),
-	(3, 0),
-	(4, 0),
-	(5, 0),
-	(6, 1),
-	(7, 1),
-	(8, 1),
-	(9, 1),
-	(10, 1),
-	(11, 1),
-	(12, 1),
-	(13, 1),
-	(14, 1),
-	(15, 1),
-	(16, 0);
+	(0, 0, "Void"),
+	(1, 0, "Dirt"),
+	(2, 0, "Sand"),
+	(3, 0, "Stone"),
+	(4, 0, "Water"),
+	(5, 0, "Chest"),
+	(6, 1, "Stone Sword"),
+	(7, 1, "Diamond Sword"),
+	(8, 1, "Health Potion"),
+	(9, 1, "Stone Pickaxe"),
+	(10, 1, "Diamond Pickaxe"),
+	(11, 1, "Egg"),
+	(12, 1, "Crafting Table"),
+	(13, 1, "Bone"),
+	(14, 1, "Coal"),
+	(15, 1, "Iron Ingot"),
+	(16, 0, "Lava");
 
 Insert Into Block(objectID, stackSize, damage, flowrate, slows, falls, name) values
-	(0, 64, 0, 0, NULL, FALSE, "Void"),
-	(1, 64, 0, 0, NULL, FALSE, "Dirt"),
-	(2, 64, 0, 0, NULL, TRUE, "Sand"),
-	(3, 64, 0, 0, NULL, FALSE, "Stone"),
-	(4, 64, 0, 5, NULL, FALSE, "Water"),
-	(5, 64, 0, 0, NULL, FALSE, "Chest"),
-	(16, 64, 15, 1, NULL, FALSE, "Lava");
+	(0, 64, 0, 0, NULL, FALSE),
+	(1, 64, 0, 0, NULL, FALSE),
+	(2, 64, 0, 0, NULL, TRUE),
+	(3, 64, 0, 0, NULL, FALSE),
+	(4, 64, 0, 5, NULL, FALSE),
+	(5, 64, 0, 0, NULL, FALSE),
+	(16, 64, 15, 1, NULL, FALSE);
 	
 Insert Into Item(objectID, stackSize, damage, name) values
-	(6, 1, 10, "Stone Sword"),
-	(7, 1, 20, "Diamond Sword"),
-	(8, 16, -20, "Health Potion"),
-	(9, 1, 3, "Stone Pickaxe"),
-	(10, 1, 3, "Diamond Pickaxe"),
-	(11, 16, 0, "Egg"),
-	(12, 1, 0, "Crafting Table"),
-	(13, 64, 0, "Bone"),
-	(14, 64, 0, "Coal"),
-	(15, 64, 0, "Iron Ingot");
+	(6, 1, 10),
+	(7, 1, 20),
+	(8, 16, -20),
+	(9, 1, 3),
+	(10, 1, 3),
+	(11, 16, 0),
+	(12, 1, 0),
+	(13, 64, 0),
+	(14, 64, 0),
+	(15, 64, 0);
 
 Insert Into Effect(objectID, effectType, effectDuration) values
 	(6, NULL, NULL),
