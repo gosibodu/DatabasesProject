@@ -100,9 +100,9 @@ Insert Into Block(objectID, stackSize, damage, flowrate, slows, falls, name) val
 	(1, 64, 0, 0, NULL, FALSE, "Dirt"),
 	(2, 64, 0, 0, NULL, TRUE, "Sand"),
 	(3, 64, 0, 0, NULL, FALSE, "Stone"),
-	(4, 64, 0, 1, NULL, FALSE, "Water"),
+	(4, 64, 0, 5, NULL, FALSE, "Water"),
 	(5, 64, 0, 0, NULL, FALSE, "Chest"),
-	(16, 64, 0,0, NULL, FALSE, "Grass");
+	(16, 64, 15, 1, NULL, FALSE, "Lava");
 	
 Insert Into Item(objectID, stackSize, damage, name) values
 	(6, 1, 10, "Stone Sword"),
