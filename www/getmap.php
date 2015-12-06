@@ -5,7 +5,11 @@
   mysql_select_db($mysql_database) or die(mysql_error());
 	
 	$result = mysql_query("SELECT * FROM world");
-	$array = mysql_fetch_row($result);
 	
-	echo json_encode($array);
+	$data = array();
+	while($row = mysql_fetch_row($result)) {
+		$data[] = $row;
+	}
+	
+	echo json_encode($data);
 ?>
