@@ -315,20 +315,27 @@
     var blocks = [];
     function initWorldObjects() {
       //Temporary list for dummy query result
-      var blocklist = [
-        {xpos: 0, ypos: 0, zpos: 0, id:1},
-        {xpos: 0, ypos: 1, zpos: 0, id:1},
-        {xpos: 1, ypos: 1, zpos: 0, id:1},
-        {xpos: 1, ypos: 0, zpos: 0, id:2},
-        {xpos: 1, ypos: -1, zpos: 0, id:1},
-        {xpos: -0, ypos: -1, zpos: 0, id:1},
-        {xpos: -1, ypos: -1, zpos: 0, id:1},
-        {xpos: -1, ypos: 0, zpos: 0, id:1},
-        {xpos: -1, ypos: 1, zpos: 0, id:1},
-      ];
-      var numBlocks = blocklist.length;
-      
-      for (var i = 0; i<numBlocks; i++)
+      var blocklist = [];
+            
+			$.ajax({                                      
+      url: 'getmap.php',                  //the script to call to get data          
+      data: "",                        //you can insert url argumnets here to pass to api.php
+                                       //for example "id=5&parent=6"
+      dataType: 'json',                //data format      
+      success: function(data)          //on recieve of reply
+      {
+        var out;
+        
+				for (var i in data) {
+					rowdata = data[i];
+					
+					blocklist[i] = {xpos: rowdata[0], ypos: rowdata[1], zpos: rowdata[2], id:rowdata[3]}
+				}
+				
+      } 
+			});
+			
+      for (var i in blocklist)
       {
         blocks[i] = new Block(blocklist[i].id, blocklist[i].xpos, blocklist[i].ypos, blocklist[i].zpos)
       }
