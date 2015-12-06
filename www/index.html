@@ -333,14 +333,17 @@
 				}
 				
 			
-        for (var i in blocklist)
-        {
+        for (var i in blocklist) {
           blocks[i] = new Block(blocklist[i].id, blocklist[i].xpos, blocklist[i].ypos, blocklist[i].zpos)
-        if (blinktime < 100) {
-            if (blocks[i].x == selX && blocks[i].y == selY && blocks[i].z == selZ) {
+          if (blinktime < 100) {
+            if (blocks[i].x == 2* selX && blocks[i].y == 2* selY && blocks[i].z == 2* selZ) {
               blocks[i] = new Block(-1, selX, selY, selZ);
+            } else {
+              blocks[-1] = new Block(-1, selX, selY, selZ);
+            }
+          } else {
+            delete blocks[-1];
           }
-        }
         }
       } 
 			});
