@@ -431,9 +431,16 @@
       {
         var out;
         
-				$.each(data, function(index, item) {
-					out += "<p>" + item + "</p>";
-				});
+				for (var i in data) {
+					out += "<p>";
+					data = data[i];
+					
+					for( var j in data)
+					{
+						out += 1 + " ";
+					}
+					out += "</p>";
+				}
 				
 				$("#output").html(out);
       } 
