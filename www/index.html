@@ -5,7 +5,7 @@
 
 <script type="text/javascript" src="scripts/glMatrix-0.9.5.min.js"></script>
 <script type="text/javascript" src="scripts/webgl-utils.js"></script>
-<script type="text/javascript" src="jquery-1.11.3.min.js"></script>
+<script type="text/javascript" src="scripts/jquery-1.11.3.min.js"></script>
 
 <script id="shader-fs" type="x-shader/x-fragment">
     precision mediump float;
@@ -415,7 +415,7 @@
 	<div id="output"></div>
 	  <script id="source" language="javascript" type="text/javascript">
 
-  $(function () 
+  function test() 
   {
     //-----------------------------------------------------------------------
     // 2) Send a http request with AJAX http://api.jquery.com/jQuery.ajax/
@@ -435,7 +435,8 @@
 				}
       } 
     });
-  }); 
+  }; 
 
   </script>
+	<button id="testbutton" onclick='test(); console.log("start test");'></button>
 </body>
