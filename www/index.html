@@ -84,7 +84,7 @@
 		    html += '</select><button type="button" onclick="insertBlock()">Create Block</button></td></tr>';
 		    $("#moreDetails").html(html)
 		  } else {
-		    $("#moreDetails").html("Delete Block");
+		    $("#moreDetails").html('<tr><td colspan="3"><button type="button" onclick="deleteBlock()">Delete Block</button></td></tr>');
 		  }
 		}
 		
@@ -111,6 +111,18 @@
 				url: "insertBlock.php",
 				data: {"id" : id,
 				      "x" : selX,
+				      "y" : selY,
+				      "z" : selZ},
+				dataType: 'String',
+				success: function(data){}
+			});
+		}
+		
+		function deleteBlock() {
+		  $.ajax({
+			  type: "GET",
+				url: "deleteBlock.php",
+				data: {"x" : selX,
 				      "y" : selY,
 				      "z" : selZ},
 				dataType: 'String',

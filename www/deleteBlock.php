@@ -4,10 +4,10 @@
 	mysql_connect($mysql_host,$mysql_user,$mysql_password) or die(mysql_error());
   mysql_select_db($mysql_database) or die(mysql_error());
 	
-	$result = mysql_query("DELETE FROM BlockInstance WHERE X = $X AND Y = $Y AND Z = $Z");
+	$X = $_GET['x'];
+	$Y = $_GET['y'];
+	$Z = $_GET['z'];
 	
-	if($result == false)
-	{
-		echo "Error! Deletion failed!"
-	}
+	$result = mysql_query("DELETE FROM BlockInstance WHERE xpos = $X AND ypos = $Y AND zpos = $Z");
+	
 ?>
