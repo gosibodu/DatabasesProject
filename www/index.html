@@ -71,9 +71,9 @@
 		}
 		
 		function updateTableDetails() {
-		  
+		  var html = "";
 		  if (selIndex == -1) {
-		    var html = '<tr><td colspan="3"><select id="newBlock">';
+		    html = '<tr><td colspan="3"><select id="newBlock">';
 		    
 		    for( var i in blockList.getName){
 		      var n = blockList.getName[i];
@@ -82,10 +82,19 @@
 		    }
 		    
 		    html += '</select><button type="button" onclick="insertBlock()">Create Block</button></td></tr>';
-		    $("#moreDetails").html(html)
 		  } else {
-		    $("#moreDetails").html('<tr><td colspan="3"><button type="button" onclick="deleteBlock()">Delete Block</button></td></tr>');
+		    html = '<tr><td colspan="3"><select id="modifyBlock">';
+		    
+		    for( var i in blockList.getName){
+		      var n = blockList.getName[i];
+		      if(i != 0)
+  		      html += '<option value="' + n + '">' + n + '</option>';
+		    }
+		    
+		    html += '</select><button type="button" onclick="modifyBlock()">Change Block</button>';
+		    html += '<button type="button" onclick="deleteBlock()">Delete Block</button></td></tr>';
 		  }
+		  $("#moreDetails").html(html);
 		}
 		
 		function insertBlock() {
@@ -94,6 +103,21 @@
 			$.ajax({
 			  type: "GET",
 				url: "insertBlock.php",
+				data: {"id" : id,
+				      "x" : selX,
+				      "y" : selY,
+				      "z" : selZ},
+				dataType: 'String',
+				success: function(data){}
+			});
+		}
+		
+		function modifyBlock() {
+		  var id = blockList.getID[$("#modifyBlock :selected").text()];
+		  
+			$.ajax({
+			  type: "GET",
+				url: "modifyBlock.php",
 				data: {"id" : id,
 				      "x" : selX,
 				      "y" : selY,
