@@ -25,7 +25,7 @@ CREATE TABLE PlayerInventory
 	slotNum integer check(slotNum>=0),
 	item integer REFERENCES Object(objectID) default(NULL)),
 	quantity integer (quantity>=0),
-	Primary Key (playerName,inventoryID,slot#)	
+	Primary Key (playerName,inventoryID,slotNum)	
 );
 
 CREATE TABLE BlockInventory
@@ -37,7 +37,7 @@ CREATE TABLE BlockInventory
 	slotNum integer check(slotNum>=0),
 	item integer,
 	quantity integer check(quantity>=0),
-	Primary Key (xpos, ypos, zpos, inventoryID, slot#)
+	Primary Key (xpos, ypos, zpos, inventoryID, slotNum)
 );
 
 CREATE TABLE Item
@@ -132,3 +132,9 @@ Insert Into Effect(objectID, effectType, effectDuration) values
 
 Insert Into Player(name, health, oxygen, experience, xpos, ypos, zpos) values
 	("Steve", 100, 100, 0, 2, 2, 1);
+  
+Insert Into PlayerInventory(name, inventoryID, slotNum, item, quantity) values
+	("Steve", 0, 0, 7, 1),
+	("Steve", 0, 1, 9, 1),
+	("Steve", 0, 2, 2, 52),
+	("Steve", 0, 3, 11, 16);
