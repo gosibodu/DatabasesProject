@@ -37,22 +37,27 @@
 
 
 <script type="text/javascript">
-
+		var objectName;
+		function updateTables(){
+      $("#xpos").html(selX);
+      $("#ypos").html(selY);
+      $("#zpos").html(selZ);
+			$("#blockname").html(objectName);
+		}
+		
     function getObjectName(objectID) {
-			var name;
+
 			$.ajax({
-				async: false,
 				url: 'getObjectName.php',                  //the script to call to get data          
 				data: "id=" + objectID,                        //you can insert url argumnets here to pass to api.php
 																				 //for example "id=5&parent=6"
 				dataType: 'json',                //data format      
 				success: function(data)          //on recieve of reply
 				{
-					name = data[0][0];
+				if(data[0] != null)
+					objectName = data[0][0];
 				}
 			});
-			
-			return name;
 		}
 		
 		var gl;
@@ -330,7 +335,7 @@
     };
 
     var blocks = [];
-		var objectName;
+		var selIndex = -1;
     function initWorldObjects() {
       //Temporary list for dummy query result
       var blocklist = [];
@@ -350,14 +355,20 @@
 					blocklist[i] = {xpos: rowdata[0], ypos: rowdata[1], zpos: rowdata[2], id:rowdata[3]}
 				}
 				
+				selIndex = -1;
+				
         for (var i in blocklist) {
           blocks[i] = new Block(blocklist[i].id, blocklist[i].xpos, blocklist[i].ypos, blocklist[i].zpos)
+          if (blocks[i].xpos == 2* selX && blocks[i].ypos == 2* selY && blocks[i].zpos == 2* selZ) {
+          	selIndex = i;
+          }
+
           if (blinktime < 100) {
             if (blocks[i].xpos == 2* selX && blocks[i].ypos == 2* selY && blocks[i].zpos == 2* selZ) {
-              objectName = getObjectName(blocks[i].id);
+
 							blocks[i] = new Block(-1, selX, selY, selZ);
             } else {
-							objectName = "Select a Block"
+
               blocks[-1] = new Block(-1, selX, selY, selZ);
             }
           } else {
@@ -366,10 +377,6 @@
         }
       } 
 			});
-      $("#xpos").html(selX);
-      $("#ypos").html(selY);
-      $("#zpos").html(selZ);
-			$("#blockname").html(objectName);
     }
     
     
@@ -434,6 +441,7 @@
 
     function handleKeyUp(event) {
       currentlyPressedKeys[event.keyCode] = false;
+      getObjectName((selIndex == -1) ? 0 : blocks[selIndex].id);
     }
 
     function handleKeys() {
@@ -461,6 +469,7 @@
         handleKeys();
         initWorldObjects();
         drawScene();
+        updateTables();
         animate();
     }
     
@@ -471,6 +480,7 @@
         initBuffers();
         initTexture();
         initWorldObjects();
+        getObjectName();
 
         gl.clearColor(0.0, 0.0, 0.0, 1.0);
         gl.enable(gl.DEPTH_TEST);
