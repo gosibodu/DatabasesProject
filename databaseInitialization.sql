@@ -1,34 +1,34 @@
-CREATE TABLE Player
+CREATE TABLE IF NOT EXISTS Player
 (
 	name varchar(20) primary key, 
 	health integer check(health>=0),
 	oxygen integer check(oxygen>=0),
-	experience integer (experience>=0),
+	experience integer check(experience>=0),
 	xpos integer,
 	ypos integer,
 	zpos integer
 );
 
-CREATE TABLE Object
+CREATE TABLE IF NOT EXISTS Object
 (
 	objectID integer Primary Key,
-	class integer check(0 <= class)  # 0 = block, 1 = item   
+	class integer check(0 <= class),  # 0 = block, 1 = item   
 	name varchar (20)
 );
 
 ALTER TABLE Object ADD check(class <= 1);
 
-CREATE TABLE PlayerInventory
+CREATE TABLE IF NOT EXISTS PlayerInventory
 (
-	playerName string REFERENCES Player,
+	playerName varchar(20) REFERENCES Player.name,
 	inventoryID integer,
 	slotNum integer check(slotNum>=0),
-	item integer REFERENCES Object(objectID) default(NULL)),
-	quantity integer (quantity>=0),
+	item integer DEFAULT NULL REFERENCES Object(objectID),
+	quantity integer check(quantity>=0),
 	Primary Key (playerName,inventoryID,slotNum)	
 );
 
-CREATE TABLE BlockInventory
+CREATE TABLE IF NOT EXISTS BlockInventory
 (
 	xpos integer,
 	ypos integer,
@@ -40,7 +40,7 @@ CREATE TABLE BlockInventory
 	Primary Key (xpos, ypos, zpos, inventoryID, slotNum)
 );
 
-CREATE TABLE Item
+CREATE TABLE IF NOT EXISTS Item
 (
 	objectID integer Primary Key REFERENCES Object.objectID,
 	stackSize integer check(stackSize>=1),
@@ -48,9 +48,9 @@ CREATE TABLE Item
 	name varchar(20)
 );
 
-CREATE TABLE Block
+CREATE TABLE IF NOT EXISTS Block
 (
-	objectID integer REFERENCES Object(objectID) Primary Key,
+	objectID integer PRIMARY KEY REFERENCES Object(objectID),
 	stackSize integer check(stackSize>=1),
 	damage integer check(damage>=0),
 	flowrate integer,
@@ -59,7 +59,7 @@ CREATE TABLE Block
 	name varchar(20)
 );
 
-CREATE TABLE BlockInstance
+CREATE TABLE IF NOT EXISTS BlockInstance
 (
 	xpos integer,
 	ypos integer,
@@ -69,7 +69,7 @@ CREATE TABLE BlockInstance
 );
 
 
-CREATE TABLE Effect
+CREATE TABLE IF NOT EXISTS Effect
 (
 	objectID integer REFERENCES Object(objectID),
 	effectType varchar(10),
@@ -77,7 +77,7 @@ CREATE TABLE Effect
 	Primary Key (objectID, effectType, effectDuration)
 );
 
-Insert Into Object(objectID, class) values
+Insert Into Object(objectID, class, name) values
 	(0, 0, "Void"),
 	(1, 0, "Dirt"),
 	(2, 0, "Sand"),
@@ -96,7 +96,7 @@ Insert Into Object(objectID, class) values
 	(15, 1, "Iron Ingot"),
 	(16, 0, "Lava");
 
-Insert Into Block(objectID, stackSize, damage, flowrate, slows, falls, name) values
+Insert Into Block(objectID, stackSize, damage, flowrate, slows, falls) values
 	(0, 64, 0, 0, NULL, FALSE),
 	(1, 64, 0, 0, NULL, FALSE),
 	(2, 64, 0, 0, NULL, TRUE),
@@ -105,7 +105,7 @@ Insert Into Block(objectID, stackSize, damage, flowrate, slows, falls, name) val
 	(5, 64, 0, 0, NULL, FALSE),
 	(16, 64, 15, 1, NULL, FALSE);
 	
-Insert Into Item(objectID, stackSize, damage, name) values
+Insert Into Item(objectID, stackSize, damage) values
 	(6, 1, 10),
 	(7, 1, 20),
 	(8, 16, -20),
@@ -133,7 +133,7 @@ Insert Into Effect(objectID, effectType, effectDuration) values
 Insert Into Player(name, health, oxygen, experience, xpos, ypos, zpos) values
 	("Steve", 100, 100, 0, 2, 2, 1);
   
-Insert Into PlayerInventory(name, inventoryID, slotNum, item, quantity) values
+Insert Into PlayerInventory(playerName, inventoryID, slotNum, item, quantity) values
 	("Steve", 0, 0, 7, 1),
 	("Steve", 0, 1, 9, 1),
 	("Steve", 0, 2, 2, 52),
