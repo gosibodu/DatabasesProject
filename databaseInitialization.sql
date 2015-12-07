@@ -1,83 +1,81 @@
 CREATE TABLE IF NOT EXISTS Player
 (
-	name varchar(20) primary key, 
-	health integer check(health>=0),
-	oxygen integer check(oxygen>=0),
-	experience integer check(experience>=0),
-	xpos integer,
-	ypos integer,
-	zpos integer
+	name 			varchar(20)		PRIMARY KEY, 
+	health 			integer 		CHECK(health>=0),
+	oxygen 			integer 		CHECK(oxygen>=0),
+	experience 		integer 		CHECK(experience>=0),
+	xpos 			integer,
+	ypos 			integer,
+	zpos 			integer
 );
 
 CREATE TABLE IF NOT EXISTS Object
 (
-	objectID integer Primary Key,
-	class integer check(0 <= class),  # 0 = block, 1 = item   
-	name varchar (20)
+	objectID 		integer 		PRIMARY KEY,
+	objectClass		integer 		NOT NULL CHECK(0 <= objectClass),  # 0 = block, 1 = item   
+	name 			varchar(20)
 );
 
-ALTER TABLE Object ADD check(class <= 1);
+ALTER TABLE Object ADD CHECK(objectClass <= 1);
 
 CREATE TABLE IF NOT EXISTS PlayerInventory
 (
-	playerName varchar(20) REFERENCES Player.name,
-	inventoryID integer,
-	slotNum integer check(slotNum>=0),
-	item integer DEFAULT NULL REFERENCES Object(objectID),
-	quantity integer check(quantity>=0),
-	Primary Key (playerName,inventoryID,slotNum)	
+	playerName 		varchar(20)		REFERENCES Player.name,
+	inventoryID		integer,
+	slotNum 		integer 		CHECK(slotNum>=0),
+	item 			integer 		DEFAULT NULL REFERENCES Object(objectID),
+	quantity 		integer 		CHECK(quantity>=0),
+	PRIMARY KEY (playerName,inventoryID,slotNum)
 );
 
 CREATE TABLE IF NOT EXISTS BlockInventory
 (
-	xpos integer,
-	ypos integer,
-	zpos integer,
-	inventoryID integer,
-	slotNum integer check(slotNum>=0),
-	item integer,
-	quantity integer check(quantity>=0),
-	Primary Key (xpos, ypos, zpos, inventoryID, slotNum)
+	xpos 			integer,
+	ypos 			integer,
+	zpos 			integer,
+	inventoryID 	integer,
+	slotNum 		integer 		CHECK(slotNum>=0),
+	item 			integer,
+	quantity 		integer 		CHECK(quantity>=0),
+	PRIMARY KEY (xpos, ypos, zpos, inventoryID, slotNum)
 );
 
 CREATE TABLE IF NOT EXISTS Item
 (
-	objectID integer Primary Key REFERENCES Object.objectID,
-	stackSize integer check(stackSize>=1),
-	damage integer,
-	name varchar(20)
+	objectID 		integer 		PRIMARY KEY REFERENCES Object.objectID,
+	stackSize 		integer 		CHECK(stackSize>=1),
+	damage 			integer
 );
 
 CREATE TABLE IF NOT EXISTS Block
 (
-	objectID integer PRIMARY KEY REFERENCES Object(objectID),
-	stackSize integer check(stackSize>=1),
-	damage integer check(damage>=0),
-	flowrate integer,
-	slows integer,
-	falls boolean,
-	name varchar(20)
+	objectID 		integer 		PRIMARY KEY REFERENCES Object.objectID,
+	stackSize 		integer 		CHECK(stackSize>=1),
+	damage 			integer 		CHECK(damage>=0),
+	flowrate 		integer,
+	slows 			integer,
+	falls 			boolean
 );
 
 CREATE TABLE IF NOT EXISTS BlockInstance
 (
-	xpos integer,
-	ypos integer,
-	zpos integer,
-	objectID integer REFERENCES Object(objectID),
-	Primary Key (objectID, xpos, ypos, zpos)
+	xpos 			integer,
+	ypos 			integer,
+	zpos 			integer,
+	objectID 		integer 		REFERENCES Object(objectID),
+	PRIMARY KEY (xpos, ypos, zpos)
 );
 
 
 CREATE TABLE IF NOT EXISTS Effect
 (
-	objectID integer REFERENCES Object(objectID),
-	effectType varchar(10),
-	effectDuration integer check(effectDuration > 0),
-	Primary Key (objectID, effectType, effectDuration)
+	objectID 		integer 		REFERENCES Object(objectID),
+	effectType 		varchar(10),
+	effectDuration 	integer 		CHECK(effectDuration > 0),
+	PRIMARY KEY (objectID, effectType, effectDuration)
 );
 
-Insert Into Object(objectID, class, name) values
+Insert Into Object(objectID, objectClass, name) VALUES
 	(0, 0, "Void"),
 	(1, 0, "Dirt"),
 	(2, 0, "Sand"),
@@ -96,16 +94,16 @@ Insert Into Object(objectID, class, name) values
 	(15, 1, "Iron Ingot"),
 	(16, 0, "Lava");
 
-Insert Into Block(objectID, stackSize, damage, flowrate, slows, falls) values
+Insert Into Block(objectID, stackSize, damage, flowrate, slows, falls) VALUES
 	(0, 64, 0, 0, NULL, FALSE),
 	(1, 64, 0, 0, NULL, FALSE),
 	(2, 64, 0, 0, NULL, TRUE),
 	(3, 64, 0, 0, NULL, FALSE),
-	(4, 64, 0, 5, NULL, FALSE),
+	(4, 64, 15, 5, NULL, FALSE),
 	(5, 64, 0, 0, NULL, FALSE),
-	(16, 64, 15, 1, NULL, FALSE);
+	(16, 64, 8, 1, NULL, FALSE);
 	
-Insert Into Item(objectID, stackSize, damage) values
+Insert Into Item(objectID, stackSize, damage) VALUES
 	(6, 1, 10),
 	(7, 1, 20),
 	(8, 16, -20),
@@ -117,7 +115,7 @@ Insert Into Item(objectID, stackSize, damage) values
 	(14, 64, 0),
 	(15, 64, 0);
 
-Insert Into Effect(objectID, effectType, effectDuration) values
+Insert Into Effect(objectID, effectType, effectDuration) VALUES
 	(6, NULL, NULL),
 	(7, "Bleed", 5),
 	(7, "Cripple", 5),	
@@ -130,10 +128,10 @@ Insert Into Effect(objectID, effectType, effectDuration) values
 	(14, NULL, NULL),
 	(15, NULL, NULL);
 
-Insert Into Player(name, health, oxygen, experience, xpos, ypos, zpos) values
+Insert Into Player(name, health, oxygen, experience, xpos, ypos, zpos) VALUES
 	("Steve", 100, 100, 0, 2, 2, 1);
   
-Insert Into PlayerInventory(playerName, inventoryID, slotNum, item, quantity) values
+Insert Into PlayerInventory(playerName, inventoryID, slotNum, item, quantity) VALUES
 	("Steve", 0, 0, 7, 1),
 	("Steve", 0, 1, 9, 1),
 	("Steve", 0, 2, 2, 52),
