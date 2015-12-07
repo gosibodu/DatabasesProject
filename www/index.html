@@ -61,8 +61,8 @@
 			});
 		}
 		
-		var objectName;
 		function updateTable(){
+  		var objectName;
       $("#xpos").html(selX);
       $("#ypos").html(selY);
       $("#zpos").html(selZ);
@@ -86,21 +86,6 @@
 		  } else {
 		    $("#moreDetails").html('<tr><td colspan="3"><button type="button" onclick="deleteBlock()">Delete Block</button></td></tr>');
 		  }
-		}
-		
-    function getObjectName(objectID) {
-
-			$.ajax({
-				url: 'getObjectName.php',                  //the script to call to get data          
-				data: "id=" + objectID,                        //you can insert url argumnets here to pass to api.php
-																				 //for example "id=5&parent=6"
-				dataType: 'json',                //data format      
-				success: function(data)          //on recieve of reply
-				{
-				if(data[0] != null)
-					objectName = data[0][0];
-				}
-			});
 		}
 		
 		function insertBlock() {
@@ -563,7 +548,6 @@
         initTexture();
         initWorldObjects();
         initDataIndexes();
-        getObjectName();
 
         gl.clearColor(0.0, 0.0, 0.0, 1.0);
         gl.enable(gl.DEPTH_TEST);
