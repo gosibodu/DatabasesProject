@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <head>
-<title>Man Oh, man</title>
+<title>World Editor</title>
 <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
 
 <script type="text/javascript" src="scripts/glMatrix-0.9.5.min.js"></script>
@@ -38,7 +38,20 @@
 
 <script type="text/javascript">
 
-    var gl;
+    function getObjectName(objectID) {
+			$.ajax({                                      
+				url: 'getObjectName.php',                  //the script to call to get data          
+				data: "id=" + objectID,                        //you can insert url argumnets here to pass to api.php
+																				 //for example "id=5&parent=6"
+				dataType: 'json',                //data format      
+				success: function(data)          //on recieve of reply
+				{
+					return data[0];
+				}
+			});
+		}
+		
+		var gl;
 
     function initGL(canvas) {
         try {
@@ -313,6 +326,7 @@
     };
 
     var blocks = [];
+		var objectName;
     function initWorldObjects() {
       //Temporary list for dummy query result
       var blocklist = [];
@@ -332,13 +346,14 @@
 					blocklist[i] = {xpos: rowdata[0], ypos: rowdata[1], zpos: rowdata[2], id:rowdata[3]}
 				}
 				
-			
         for (var i in blocklist) {
           blocks[i] = new Block(blocklist[i].id, blocklist[i].xpos, blocklist[i].ypos, blocklist[i].zpos)
           if (blinktime < 100) {
             if (blocks[i].x == 2* selX && blocks[i].y == 2* selY && blocks[i].z == 2* selZ) {
-              blocks[i] = new Block(-1, selX, selY, selZ);
+              objectName = getObjectName(blocks[i].id);
+							blocks[i] = new Block(-1, selX, selY, selZ);
             } else {
+							objectName = ""
               blocks[-1] = new Block(-1, selX, selY, selZ);
             }
           } else {
@@ -347,7 +362,10 @@
         }
       } 
 			});
-      $("#blockname").html("dirt");
+      $("#xpos").html(selX);
+      $("#ypos").html(selY);
+      $("#zpos").html(selZ);
+			$("#blockname").html(objectName);
     }
     
     
@@ -394,19 +412,19 @@
       }
       if (currentlyPressedKeys[37]) {
         // Left cursor key
-        selY -= 1;
+        selX -= 1;
       }
       if (currentlyPressedKeys[39]) {
         // Right cursor key
-        selY += 1;
+        selX += 1;
       }
       if (currentlyPressedKeys[38]) {
         // Up cursor key
-        selX -= 1;
+        selY += 1;
       }
       if (currentlyPressedKeys[40]) {
         // Down cursor key
-        selX += 1;
+        selY -= 1;
       }
     }
 
@@ -428,7 +446,7 @@
             
             xRot = -45;
             yRot = 0;
-            zRot = -45;
+            zRot = 45;
         }
         lastTime = timeNow;
     }
@@ -475,9 +493,29 @@
 
 	<div>
   
-    <canvas id="main_window" style="border: 10px solid #AEAEAE;" width="500" height="500"></canvas>
-	 
+    <canvas id="main_window" style="border: 10px solid #AEAEAE; display: inline" width="500" height="500"></canvas>
+	  <table border="1" style="border: 10px solid #AEAEAE; display: inline-block" width="500" height="500">
+			<thead>
+				<tr>
+					<td colspan="3">Block Details</td>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>X Position</td>
+					<td>Y Position</td>
+					<td>Z Position</td>
+				</tr>
+				<tr>
+					<td id = "xpos">0</td>
+					<td id = "ypos">0</td>
+					<td id = "zpos">0</td>
+				</tr>
+				<tr>
+					<td id ="blockname" colspan="3">Block Name</td>
+				</tr>
+			</tbody>
+			<tbody id="moreDetails"></tbody>
+		</table>
 	<div>
-  <div id="blockname"></div>
-
 </body>
