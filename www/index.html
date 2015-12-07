@@ -39,16 +39,20 @@
 <script type="text/javascript">
 
     function getObjectName(objectID) {
-			$.ajax({                                      
+			var name;
+			$.ajax({
+				async: false,
 				url: 'getObjectName.php',                  //the script to call to get data          
 				data: "id=" + objectID,                        //you can insert url argumnets here to pass to api.php
 																				 //for example "id=5&parent=6"
 				dataType: 'json',                //data format      
 				success: function(data)          //on recieve of reply
 				{
-					return data[0];
+					name = data[0][0];
 				}
 			});
+			
+			return name;
 		}
 		
 		var gl;
@@ -310,17 +314,17 @@
     }
     
     function Block(blockID, x, y, z) {
-      this.x = 2*x;
-      this.y = 2*y;
-      this.z = 2*z;
-      this.blockID = blockID;
+      this.xpos = 2*x;
+      this.ypos = 2*y;
+      this.zpos = 2*z;
+      this.id = blockID;
     }
     
     Block.prototype.draw = function() {
       mvPushMatrix();
       
-      mat4.translate(mvMatrix, [this.x, this.y, this.z]);
-      drawBlock(this.blockID);
+      mat4.translate(mvMatrix, [this.xpos, this.ypos, this.zpos]);
+      drawBlock(this.id);
       
       mvPopMatrix();
     };
@@ -349,11 +353,11 @@
         for (var i in blocklist) {
           blocks[i] = new Block(blocklist[i].id, blocklist[i].xpos, blocklist[i].ypos, blocklist[i].zpos)
           if (blinktime < 100) {
-            if (blocks[i].x == 2* selX && blocks[i].y == 2* selY && blocks[i].z == 2* selZ) {
+            if (blocks[i].xpos == 2* selX && blocks[i].ypos == 2* selY && blocks[i].zpos == 2* selZ) {
               objectName = getObjectName(blocks[i].id);
 							blocks[i] = new Block(-1, selX, selY, selZ);
             } else {
-							objectName = ""
+							objectName = "Select a Block"
               blocks[-1] = new Block(-1, selX, selY, selZ);
             }
           } else {
