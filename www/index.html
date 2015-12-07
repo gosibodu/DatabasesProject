@@ -436,6 +436,8 @@
 				
 				selIndex = -1;
 				
+				delete blocks;
+				
         for (var i in blocklist) {
           blocks[i] = new Block(blocklist[i].id, blocklist[i].xpos, blocklist[i].ypos, blocklist[i].zpos)
           if (blocks[i].xpos == 2* selX && blocks[i].ypos == 2* selY && blocks[i].zpos == 2* selZ) {
