@@ -1,0 +1,23 @@
+#main_window {
+  border: 10px solid #AEAEAE;
+  display: inline-block;
+}
+
+#detailsTable {
+  border: 10px solid #AEAEAE;
+  display: inline-block;
+  margin: 0;
+  table-layout: fixed;
+  width: 360px;
+}
+
+#detailsTable th,td {
+  overflow: hidden;
+  width:180px;
+  text-align:center;
+}
+
+#newBlock #modifyBlock {
+  min-width:100px;
+  padding:0;
+}

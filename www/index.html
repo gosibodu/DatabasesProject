@@ -6,6 +6,7 @@
 <script type="text/javascript" src="scripts/glMatrix-0.9.5.min.js"></script>
 <script type="text/javascript" src="scripts/webgl-utils.js"></script>
 <script type="text/javascript" src="scripts/jquery-1.11.3.min.js"></script>
+<link rel="stylesheet" type="text/css" href="./css/main.css">
 
 <script id="shader-fs" type="x-shader/x-fragment">
     precision mediump float;
@@ -94,7 +95,7 @@
 		    html += '</select><button type="button" onclick="modifyBlock()">Change Block</button>';
 		    html += '<button type="button" onclick="deleteBlock()">Delete Block</button></td></tr>';
 		  }
-		  $("#moreDetails").html(html);
+		  $("#editSelectionControl").html(html);
 		}
 		
 		function insertBlock() {
@@ -600,11 +601,11 @@
 
 	<div>
   
-    <canvas id="main_window" style="border: 10px solid #AEAEAE; display: inline" width="500" height="500"></canvas>
-	  <table border="1" style="border: 10px solid #AEAEAE; display: inline-block" width="500" height="500">
+    <canvas id="main_window" width="500" height="500"></canvas>
+	  <table id="detailsTable" border="1" height="520">
 			<thead>
 				<tr>
-					<td colspan="3">Block Details</td>
+					<th colspan="3">Block Details</td>
 				</tr>
 			</thead>
 			<tbody>
@@ -622,7 +623,8 @@
 					<td id ="blockname" colspan="3">Block Name</td>
 				</tr>
 			</tbody>
-			<tbody id="moreDetails"></tbody>
+			<tbody id="editSelectionControl"></tbody>
+			<tbody id="selectedBlockDetails"></tbody>
 		</table>
 	<div>
 </body>
