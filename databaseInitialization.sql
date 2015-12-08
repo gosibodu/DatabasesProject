@@ -20,6 +20,15 @@ CREATE TABLE IF NOT EXISTS Object
 ALTER TABLE Object ADD CHECK(objectClass <= 1);
 ALTER TABLE Object AUTO_INCREMENT=0;
 
+CREATE TABLE IF NOT EXISTS BlockInstance
+(
+	xpos 			integer,
+	ypos 			integer,
+	zpos 			integer,
+	objectID 		integer 		REFERENCES Object(objectID),
+	PRIMARY KEY (xpos, ypos, zpos)
+);
+
 CREATE TABLE IF NOT EXISTS PlayerInventory
 (
 	playerName 		varchar(20)		REFERENCES Player.name,
@@ -32,12 +41,12 @@ CREATE TABLE IF NOT EXISTS PlayerInventory
 
 CREATE TABLE IF NOT EXISTS BlockInventory
 (
-	xpos 			integer,
-	ypos 			integer,
-	zpos 			integer,
+	xpos 			integer      REFERENCES BlockInstance.xpos,
+	ypos 			integer      REFERENCES BlockInstance.ypos,
+	zpos 			integer      REFERENCES BlockInstance.zpos,
 	inventoryID 	integer,
 	slotNum 		integer 		CHECK(slotNum>=0),
-	item 			integer,
+	item 			integer      DEFAULT NULL REFERENCES Object(objectID),
 	quantity 		integer 		CHECK(quantity>=0),
 	PRIMARY KEY (xpos, ypos, zpos, inventoryID, slotNum)
 );
@@ -60,19 +69,9 @@ CREATE TABLE IF NOT EXISTS Block
 	hasInventory boolean  Default false
 );
 
-CREATE TABLE IF NOT EXISTS BlockInstance
-(
-	xpos 			integer,
-	ypos 			integer,
-	zpos 			integer,
-	objectID 		integer 		REFERENCES Object(objectID),
-	PRIMARY KEY (xpos, ypos, zpos)
-);
-
-
 CREATE TABLE IF NOT EXISTS Effect
 (
-	objectID 		integer 		REFERENCES Object(objectID),
+	objectID 		integer 		REFERENCES Item.ObjectID,
 	effectType 		varchar(10),
 	effectDuration 	integer 		CHECK(effectDuration > 0),
 	PRIMARY KEY (objectID, effectType, effectDuration)
