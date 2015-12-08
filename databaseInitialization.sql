@@ -32,8 +32,8 @@ CREATE TABLE IF NOT EXISTS BlockInstance
 CREATE TABLE IF NOT EXISTS PlayerInventory
 (
 	playerName 		varchar(20)		REFERENCES Player.name,
-	inventoryID		integer,
-	slotNum 		integer 		CHECK(slotNum>=0),
+	inventoryID		integer    DEFAULT 0,
+	slotNum 		integer 		UNIQUE CHECK(slotNum>=0),
 	item 			integer 		DEFAULT NULL REFERENCES Object(objectID),
 	quantity 		integer 		CHECK(quantity>=0),
 	PRIMARY KEY (playerName,inventoryID,slotNum)
@@ -44,8 +44,8 @@ CREATE TABLE IF NOT EXISTS BlockInventory
 	xpos 			integer      REFERENCES BlockInstance.xpos,
 	ypos 			integer      REFERENCES BlockInstance.ypos,
 	zpos 			integer      REFERENCES BlockInstance.zpos,
-	inventoryID 	integer,
-	slotNum 		integer 		CHECK(slotNum>=0),
+	inventoryID 	integer  DEFAULT 0, 
+	slotNum 		integer 		UNIQUE CHECK(slotNum>=0),
 	item 			integer      DEFAULT NULL REFERENCES Object(objectID),
 	quantity 		integer 		CHECK(quantity>=0),
 	PRIMARY KEY (xpos, ypos, zpos, inventoryID, slotNum)

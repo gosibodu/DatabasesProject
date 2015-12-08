@@ -194,6 +194,36 @@
 		  $("#itemArea").html(html);
 		}
 		
+		var currentInventory = {};
+		function getBlockInventory () {
+		  if (selIndex != -1)
+		  if (blockDict.hasInventory[blocks[selIndex].id] == 1) {
+		    $.ajax({
+			    type: "GET",
+				  url: "getBlockInventory.php",
+				  data: {"x" : selX,
+				        "y" : selY,
+				        "z" : selZ},
+				  dataType: 'json',
+				  success: function(data){
+				    for (var i in data)
+				    {
+				      var row = data[i];
+				      $("#slot" + row[1]).html('<img src="img/' + row[2] +'.png">');
+				    }
+				  }
+			  });
+		  } else {
+		    clearInventoryTable();
+		  } else {
+		    clearInventoryTable();
+		  } 
+		}
+		
+		function clearInventoryTable (){
+		  $(".inventorySlot").html(" ");
+		}
+		
 		var gl;
 
     function initGL(canvas) {
@@ -590,6 +620,7 @@
     function handleKeyUp(event) {
       currentlyPressedKeys[event.keyCode] = false;
       updateTableDetails();
+      getBlockInventory();
     }
 
     function handleKeys() {
@@ -689,6 +720,29 @@
 				</tr>
 			</thead>
 	    <tbody id="itemArea"><tbody>
+	  </table>
+	  <table id="inventoryControl" border="1">
+			<thead>
+				<tr>
+					<th colspan="3">Item Details</th>
+				</tr>
+			</thead>
+	    <tbody>
+	      <tr>
+	        <td colspan="1">Item Name</td>
+	        <td id="itemName" colspan="2"></td>
+	      </tr>
+	      <tr>
+	        <td>damage</td>
+	        <td>quantity</td>
+	        <td>stackSize</td>
+	      </tr>
+	      <tr>
+	        <td id="itemDamage" ></td>
+	        <td id="itemQuantity" ></td>
+	        <td id="itemStackSize" ></td>
+	      </tr>
+	    </tbody>
 	  </table>
 	</div>
 </body>
