@@ -77,24 +77,24 @@ CREATE TABLE IF NOT EXISTS Effect
 	PRIMARY KEY (objectID, effectType, effectDuration)
 );
 
-Insert Into Object(objectID, objectClass, name) VALUES
-	(0, 0, "Void"),
-	(1, 0, "Dirt"),
-	(2, 0, "Sand"),
-	(3, 0, "Stone"),
-	(4, 0, "Water"),
-	(5, 0, "Chest"),
-	(6, 1, "Stone Sword"),
-	(7, 1, "Diamond Sword"),
-	(8, 1, "Health Potion"),
-	(9, 1, "Stone Pickaxe"),
-	(10, 1, "Diamond Pickaxe"),
-	(11, 1, "Egg"),
-	(12, 1, "Crafting Table"),
-	(13, 1, "Bone"),
-	(14, 1, "Coal"),
-	(15, 1, "Iron Ingot"),
-	(16, 0, "Lava");
+Insert Into Object(objectClass, name) VALUES
+	(0, "Void"),
+	(0, "Dirt"),
+	(0, "Sand"),
+	(0, "Stone"),
+	(0, "Water"),
+	(0, "Chest"),
+	(1, "Stone Sword"),
+	(1, "Diamond Sword"),
+	(1, "Health Potion"),
+	(1, "Stone Pickaxe"),
+	(1, "Diamond Pickaxe"),
+	(1, "Egg"),
+	(1, "Crafting Table"),
+	(1, "Bone"),
+	(1, "Coal"),
+	(1, "Iron Ingot"),
+	(0, "Lava");
 
 Insert Into Block(objectID, stackSize, damage, flowrate, slows, falls, hasInventory) VALUES
 	(0, 64, 0, 0, NULL, FALSE, FALSE),
