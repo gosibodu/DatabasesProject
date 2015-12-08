@@ -38,8 +38,8 @@
 
 
 <script type="text/javascript">
-		var blockList = {getID : {}, getName : {}};
-		var itemList = {getID : {}, getName : {}};
+		var blockDict = {getID : {}, getName : {}};
+		var itemDict = {getID : {}, getName : {}};
 		function initDataIndexes() {
 			$.ajax({
 				url: 'getObjectList.php',
@@ -50,12 +50,12 @@
 				  for (var i in data) {
 				    var row = data[i];
 				    if (row[0] == 0) {
-				      blockList.getName[row[1]] = row[2];
-				      blockList.getID[row[2]] = row[1];
+				      blockDict.getName[row[1]] = row[2];
+				      blockDict.getID[row[2]] = row[1];
 				    }
 				    if (row[0] == 1) {
-				      itemList.getName[row[1]] = row[2];
-				      itemList.getID[row[2]] = row[1];
+				      itemDict.getName[row[1]] = row[2];
+				      itemDict.getID[row[2]] = row[1];
 				    }
 				  }
 				}
@@ -67,7 +67,7 @@
       $("#xpos").html(selX);
       $("#ypos").html(selY);
       $("#zpos").html(selZ);
-		  objectName = blockList.getName[(selIndex == -1) ? 0 : blocks[selIndex].id];
+		  objectName = blockDict.getName[(selIndex == -1) ? 0 : blocks[selIndex].id];
 			$("#blockname").html(objectName);
 		}
 		
@@ -76,30 +76,34 @@
 		  if (selIndex == -1) {
 		    html = '<tr><td colspan="3"><select id="newBlock">';
 		    
-		    for( var i in blockList.getName){
-		      var n = blockList.getName[i];
+		    for( var i in blockDict.getName){
+		      var n = blockDict.getName[i];
 		      if(i != 0)
   		      html += '<option value="' + n + '">' + n + '</option>';
 		    }
 		    
 		    html += '</select><button type="button" onclick="insertBlock()">Create Block</button></td></tr>';
+		    
+		    $("#selectedBlockDetails").html("");
 		  } else {
 		    html = '<tr><td colspan="3"><select id="modifyBlock">';
 		    
-		    for( var i in blockList.getName){
-		      var n = blockList.getName[i];
+		    for( var i in blockDict.getName){
+		      var n = blockDict.getName[i];
 		      if(i != 0)
   		      html += '<option value="' + n + '">' + n + '</option>';
 		    }
 		    
 		    html += '</select><button type="button" onclick="modifyBlock()">Change Block</button>';
 		    html += '<button type="button" onclick="deleteBlock()">Delete Block</button></td></tr>';
+		    
+		    getBlockInfo(blocks[selIndex].id);
 		  }
 		  $("#editSelectionControl").html(html);
 		}
 		
 		function insertBlock() {
-		  var id = blockList.getID[$("#newBlock :selected").text()];
+		  var id = blockDict.getID[$("#newBlock :selected").text()];
 		  
 			$.ajax({
 			  type: "GET",
@@ -114,7 +118,7 @@
 		}
 		
 		function modifyBlock() {
-		  var id = blockList.getID[$("#modifyBlock :selected").text()];
+		  var id = blockDict.getID[$("#modifyBlock :selected").text()];
 		  
 			$.ajax({
 			  type: "GET",
@@ -137,6 +141,27 @@
 				      "z" : selZ},
 				dataType: 'String',
 				success: function(data){}
+			});
+		}
+		
+		function getBlockInfo(objectID) {
+		  $.ajax({
+			  type: "GET",
+				url: "getBlockInfo.php",
+				data: {"id" : objectID},
+				dataType: 'json',
+				success: function(data){
+				  var html = '';
+				  for (var i in data) {
+				    row = data[i];
+				    html += '<tr><td>stackSize</td><td colspan="2">' + row[1] + '</td></tr>';
+				    html += '<tr><td>damage</td><td colspan="2">' + row[2] + '</td></tr>';
+				    html += '<tr><td>flowRate</td><td colspan="2">' + row[3] + '</td></tr>';
+				    html += '<tr><td>slows</td><td colspan="2">' + row[4] + '</td></tr>';
+				    html += '<tr><td>falls</td><td colspan="2">' + row[5] + '</td></tr>';
+				  }
+				  $('#selectedBlockDetails').html(html);
+				}
 			});
 		}
 		
