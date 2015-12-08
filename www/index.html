@@ -152,13 +152,15 @@
 				dataType: 'json',
 				success: function(data){
 				  var html = '';
+				  var bool = {0:"FALSE",1:"TRUE"};
 				  for (var i in data) {
 				    row = data[i];
 				    html += '<tr><td>stackSize</td><td colspan="2">' + row[1] + '</td></tr>';
 				    html += '<tr><td>damage</td><td colspan="2">' + row[2] + '</td></tr>';
 				    html += '<tr><td>flowRate</td><td colspan="2">' + row[3] + '</td></tr>';
 				    html += '<tr><td>slows</td><td colspan="2">' + row[4] + '</td></tr>';
-				    html += '<tr><td>falls</td><td colspan="2">' + row[5] + '</td></tr>';
+				    html += '<tr><td>falls</td><td colspan="2">' + bool[row[5]] + '</td></tr>';
+				    html += '<tr><td>hasInventory</td><td colspan="2">' + bool[row[6]] + '</td></tr>';
 				  }
 				  $('#selectedBlockDetails').html(html);
 				}

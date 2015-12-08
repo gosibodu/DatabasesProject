@@ -11,12 +11,14 @@ CREATE TABLE IF NOT EXISTS Player
 
 CREATE TABLE IF NOT EXISTS Object
 (
-	objectID 		integer 		PRIMARY KEY,
+	objectID 		integer 		 NOT NULL AUTO_INCREMENT,
 	objectClass		integer 		NOT NULL CHECK(0 <= objectClass),  # 0 = block, 1 = item   
-	name 			varchar(20)
+	name 			varchar(20),
+	PRIMARY KEY (objectID)
 );
 
 ALTER TABLE Object ADD CHECK(objectClass <= 1);
+ALTER TABLE Object AUTO_INCREMENT=0;
 
 CREATE TABLE IF NOT EXISTS PlayerInventory
 (
@@ -54,7 +56,8 @@ CREATE TABLE IF NOT EXISTS Block
 	damage 			integer 		CHECK(damage>=0),
 	flowrate 		integer,
 	slows 			integer,
-	falls 			boolean
+	falls 			boolean,
+	hasInventory boolean  Default false
 );
 
 CREATE TABLE IF NOT EXISTS BlockInstance
@@ -94,14 +97,14 @@ Insert Into Object(objectID, objectClass, name) VALUES
 	(15, 1, "Iron Ingot"),
 	(16, 0, "Lava");
 
-Insert Into Block(objectID, stackSize, damage, flowrate, slows, falls) VALUES
-	(0, 64, 0, 0, NULL, FALSE),
-	(1, 64, 0, 0, NULL, FALSE),
-	(2, 64, 0, 0, NULL, TRUE),
-	(3, 64, 0, 0, NULL, FALSE),
-	(4, 64, 15, 5, NULL, FALSE),
-	(5, 64, 0, 0, NULL, FALSE),
-	(16, 64, 8, 1, NULL, FALSE);
+Insert Into Block(objectID, stackSize, damage, flowrate, slows, falls, hasInventory) VALUES
+	(0, 64, 0, 0, NULL, FALSE, FALSE),
+	(1, 64, 0, 0, NULL, FALSE, FALSE),
+	(2, 64, 0, 0, NULL, TRUE, FALSE),
+	(3, 64, 0, 0, NULL, FALSE, FALSE),
+	(4, 64, 15, 5, NULL, FALSE, FALSE),
+	(5, 64, 0, 0, NULL, FALSE, TRUE),
+	(16, 64, 8, 1, NULL, FALSE, FALSE);
 	
 Insert Into Item(objectID, stackSize, damage) VALUES
 	(6, 1, 10),
@@ -136,3 +139,14 @@ Insert Into PlayerInventory(playerName, inventoryID, slotNum, item, quantity) VA
 	("Steve", 0, 1, 9, 1),
 	("Steve", 0, 2, 2, 52),
 	("Steve", 0, 3, 11, 16);
+	
+INSERT INTO `BlockInstance` (`xpos`, `ypos`, `zpos`, `objectID`) VALUES 
+(0, 0, 0, 1),
+(0, 1, 0, 2),
+(1, 1, 0, 1),
+(1, 0, 0, 2),
+(1, -1, 0, 1),
+(0, -1, 0, 2),
+(-1, -1, 0, 1),
+(-1, 0, 0, 2),
+(-1, 1, 0, 1);
