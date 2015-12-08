@@ -180,6 +180,20 @@
 			});
 		}
 		
+		function initInventory () {
+		  var html = "";
+		  
+		  for (var i = 0; i < 3; i++)
+		  {
+		    html += '<tr>';
+		    for (var j = 0; j < 10; j++)
+		      html += '<td id="slot' + (i*10 + j) +'" class="inventorySlot"></td>';
+		    html += '</tr>';
+		  }
+		  
+		  $("#itemArea").html(html);
+		}
+		
 		var gl;
 
     function initGL(canvas) {
@@ -615,6 +629,7 @@
         initTexture();
         initWorldObjects();
         initDataIndexes();
+        initInventory();
 
         gl.clearColor(0.0, 0.0, 0.0, 1.0);
         gl.enable(gl.DEPTH_TEST);
@@ -639,13 +654,12 @@
     <li>David Strickland</li>
   </ul>
 
-	<div>
-  
+	<div id="top">
     <canvas id="main_window" width="500" height="500"></canvas>
 	  <table id="detailsTable" border="1" height="520">
 			<thead>
 				<tr>
-					<th colspan="3">Block Details</td>
+					<th colspan="3">Block Details</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -667,4 +681,14 @@
 			<tbody id="selectedBlockDetails"></tbody>
 		</table>
 	<div>
+	<div>
+	  <table id="inventoryTable" border="1">
+			<thead>
+				<tr>
+					<th colspan="10">Inventory</th>
+				</tr>
+			</thead>
+	    <tbody id="itemArea"><tbody>
+	  </table>
+	</div>
 </body>

@@ -29,3 +29,21 @@
 #selectedBlockDetails td:nth-of-type(2) {
   text-align:right;
 }
+
+#inventoryTable {
+  border: 10px solid #AEAEAE;
+  display: inline-block;
+  margin:  0;
+  padding: 0;
+  table-layout: fixed;
+  width: 600px;
+}
+
+#inventoryTable td,th{
+  overflow: hidden;
+  width:60px;
+  text-align:center;
+}
+#inventoryTable td{
+  height:60px;
+}
