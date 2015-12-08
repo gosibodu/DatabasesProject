@@ -38,25 +38,38 @@
 
 
 <script type="text/javascript">
-		var blockDict = {getID : {}, getName : {}};
-		var itemDict = {getID : {}, getName : {}};
+		var blockDict = {getID : {}, getName : {}, hasInventory : {}};
+		var itemDict = {getID : {}, getName : {}, getEffects : {}};
 		function initDataIndexes() {
 			$.ajax({
-				url: 'getObjectList.php',
+				url: 'getBlockDict.php',
 				data: "",
 				dataType: 'json',
 				success: function(data)
 				{
 				  for (var i in data) {
 				    var row = data[i];
-				    if (row[0] == 0) {
-				      blockDict.getName[row[1]] = row[2];
-				      blockDict.getID[row[2]] = row[1];
-				    }
-				    if (row[0] == 1) {
-				      itemDict.getName[row[1]] = row[2];
-				      itemDict.getID[row[2]] = row[1];
-				    }
+				      blockDict.getName[row[0]] = row[1];
+				      blockDict.getID[row[1]] = row[0];
+				      blockDict.hasInventory[row[0]] = row[2];
+				  }
+				}
+			});
+			$.ajax({
+				url: 'getItemDict.php',
+				data: "",
+				dataType: 'json',
+				success: function(data)
+				{
+				  for (var i in data) {
+				    var row = data[i];
+			      itemDict.getName[row[0]] = row[1];
+			      itemDict.getID[row[1]] = row[0];
+			      if (row[2]) {
+			        if (itemDict.getEffects[row[0]] == undefined)
+				        itemDict.getEffects[row[0]]= {};
+			        itemDict.getEffects[row[0]][row[2]] = row[3];
+			      }
 				  }
 				}
 			});
