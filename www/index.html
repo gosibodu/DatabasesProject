@@ -83,7 +83,45 @@
 		  objectName = blockDict.getName[(selIndex == -1) ? 0 : blocks[selIndex].id];
 			$("#blockname").html(objectName);
 		}
-		
+		/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		  var mouseDown = false;
+  var lastMouseX = 45;
+  var lastMouseY = 45;
+
+  var worldRotationMatrix = mat4.create();
+  mat4.identity(worldRotationMatrix);
+
+  function handleMouseDown(event) {
+    mouseDown = true;
+    lastMouseX = event.clientX;
+    lastMouseY = event.clientY;
+  }
+
+  function handleMouseUp(event) {
+    mouseDown = false;
+  }
+
+  function handleMouseMove(event) {
+    if (!mouseDown) {
+      return;
+    }
+    var newX = event.clientX;
+    var newY = event.clientY;
+
+    var deltaX = newX - lastMouseX;
+    var newRotationMatrix = mat4.create();
+    mat4.identity(newRotationMatrix);
+    mat4.rotate(newRotationMatrix, degToRad(deltaX / 4), [0, 1, 0]);
+
+    var deltaY = newY - lastMouseY;
+    mat4.rotate(newRotationMatrix, degToRad(deltaY / 4), [1, 0, 0]);
+
+    mat4.multiply(newRotationMatrix, worldRotationMatrix, worldRotationMatrix);
+
+    lastMouseX = newX
+    lastMouseY = newY;
+  }
+		/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		function updateTableDetails() {
 		  var html = "";
 		  if (selIndex == -1) {
@@ -182,16 +220,16 @@
 		
 		function initInventory () {
 		  var html = "";
-		  
 		  for (var i = 0; i < 3; i++)
 		  {
 		    html += '<tr>';
 		    for (var j = 0; j < 10; j++)
-		      html += '<td id="slot' + (i*10 + j) +'" class="inventorySlot"></td>';
+		      html += '<td id="slot' + (i*10 + j) +'" class="inventorySlot" value="'+ (i*10 + j) +'"></td>';
 		    html += '</tr>';
 		  }
 		  
 		  $("#itemArea").html(html);
+		  clearInventoryTable();
 		}
 		
 		var currentInventory = {};
@@ -210,6 +248,7 @@
 				    {
 				      var row = data[i];
 				      $("#slot" + row[1]).html('<img src="img/' + row[2] +'.png">');
+				      currentInventory[row[1]] = {"id" : row[2], "damage" : row[3], "quantity" : row[4], "stackSize" : row[5]};
 				    }
 				  }
 			  });
@@ -222,6 +261,45 @@
 		
 		function clearInventoryTable (){
 		  $(".inventorySlot").html(" ");
+		  resetItemDetails();
+		}
+		
+		function resetItemDetails(){
+		  $("#itemName").html("-");
+		  $("#itemDamage").html("-");
+		  $("#itemQuantity").html("-");
+		  $("#itemStackSize").html("-");
+		  $("#effectTable").html(" ");
+		}
+		
+		function getSlotInfo (slot) {
+		  if (currentInventory[slot] != undefined) {
+		    item = currentInventory[slot];
+		    $("#itemName").html(itemDict.getName[item.id]);
+		    $("#itemDamage").html(item.damage);
+		    $("#itemQuantity").html(item.quantity);
+		    $("#itemStackSize").html(item.stackSize);
+		    
+		    if (itemDict.getEffects[item.id] != undefined) {
+		      var html = "";
+		      var efx = itemDict.getEffects[item.id];
+		      
+		      html += '<tr><td colspan="3"><strong>Effects</strong></td></tr>'
+		      
+		      for (var e in efx){
+		        html += '<tr><td colspan="2">';
+		        html += e;
+		        html += '</td><td>';
+		        html += efx[e];
+		        html += '</td></tr>';
+		      }
+		      $("#effectTable").html(html);
+		    } else {
+		      $("#effectTable").html(" ");
+		    }
+		  } else {
+		    resetItemDetails();
+		  }
 		}
 		
 		var gl;
@@ -545,11 +623,6 @@
 			});
     }
     
-    
-    var xRot = 0;
-    var yRot = 0;
-    var zRot = 0;
-
     var selX = 0;
     var selY = 0;
     var selZ = 0;
@@ -564,14 +637,12 @@
 
         mat4.translate(mvMatrix, [0.0, 0.0, -25.0]);
 
-        mat4.rotate(mvMatrix, degToRad(xRot), [1, 0, 0]);
-        mat4.rotate(mvMatrix, degToRad(yRot), [0, 1, 0]);
-        mat4.rotate(mvMatrix, degToRad(zRot), [0, 0, 1]);
-        
+        mat4.multiply(mvMatrix, worldRotationMatrix);
         
         for(var i in blocks) {
           blocks[i].draw();
         }
+        
 
     }
 
@@ -587,6 +658,10 @@
               return false;
           }
           return true;
+    });
+    
+    $(document).on('click', '.inventorySlot', function(e) {
+      getSlotInfo($(this).attr("value"));
     });
     
     function handleKeyDown(event) {
@@ -634,10 +709,7 @@
             var elapsed = timeNow - lastTime;
 
             blinktime = (blinktime + elapsed) % 1000;
-            
-            xRot = -45;
-            yRot = 0;
-            zRot = 45;
+
         }
         lastTime = timeNow;
     }
@@ -661,12 +733,23 @@
         initWorldObjects();
         initDataIndexes();
         initInventory();
+        drawScene();
+        
+    var newRotationMatrix = mat4.create();
+    mat4.identity(newRotationMatrix);
+    mat4.rotate(newRotationMatrix, degToRad(-45), [1, 0, 0]);
+    mat4.rotate(newRotationMatrix, degToRad(45), [0, 0, 1]);
+    mat4.multiply(newRotationMatrix, worldRotationMatrix, worldRotationMatrix);
 
         gl.clearColor(0.0, 0.0, 0.0, 1.0);
         gl.enable(gl.DEPTH_TEST);
         
         document.onkeydown = handleKeyDown;
         document.onkeyup = handleKeyUp;
+        
+   canvas.onmousedown = handleMouseDown;
+    document.onmouseup = handleMouseUp;
+    document.onmousemove = handleMouseMove;
     
         tick();
     }
@@ -743,6 +826,7 @@
 	        <td id="itemStackSize" ></td>
 	      </tr>
 	    </tbody>
+	    <tbody id=effectTable></tbody>
 	  </table>
 	</div>
 </body>
