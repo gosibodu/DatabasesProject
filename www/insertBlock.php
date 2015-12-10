@@ -9,6 +9,7 @@
 	$Y = $_GET['y'];
 	$Z = $_GET['z'];
 	
-	$result = mysql_query("INSERT INTO BlockInstance (xpos, ypos, zpos, objectID) VALUES($X, $Y, $Z, $objectID)");
+	mysql_query("INSERT INTO BlockInstance (xpos, ypos, zpos, objectID) 
+	              VALUES($X, $Y, $Z, $objectID)");
 	
 ?>

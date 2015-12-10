@@ -8,6 +8,10 @@
 	$Y = $_GET['y'];
 	$Z = $_GET['z'];
 	
-	$result = mysql_query("DELETE FROM BlockInstance WHERE xpos = $X AND ypos = $Y AND zpos = $Z");
+	mysql_query("DELETE FROM BlockInventory 
+	              WHERE xpos = $X AND ypos = $Y AND zpos = $Z");
+	              
+	mysql_query("DELETE FROM BlockInstance 
+	              WHERE xpos = $X AND ypos = $Y AND zpos = $Z");
 	
 ?>
