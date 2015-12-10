@@ -234,8 +234,7 @@
 		
 		var currentInventory = {};
 		function getBlockInventory () {
-		  if (selIndex != -1)
-		  if (blockDict.hasInventory[blocks[selIndex].id] == 1) {
+		  if (selIndex != -1 && blockDict.hasInventory[blocks[selIndex].id] == 1) {
 		    $.ajax({
 			    type: "GET",
 				  url: "getBlockInventory.php",
@@ -254,9 +253,7 @@
 			  });
 		  } else {
 		    clearInventoryTable();
-		  } else {
-		    clearInventoryTable();
-		  } 
+		  }
 		}
 		
 		function clearInventoryTable (){
@@ -300,6 +297,23 @@
 		  } else {
 		    resetItemDetails();
 		  }
+		}
+		
+		function insertItemInBlock(slotNum, itemID, qty) {
+		  $.ajax({
+			  type: "GET",
+				url: "insertBlockInventory.php",
+				data: {"x" : selX,
+				      "y" : selY,
+				      "z" : selZ,
+				      "inv": 0,
+				      "slot": slotNum,
+				      "item": itemID,
+				      "qty": qty},
+				dataType: 'json',
+				success: function(data){ getBlockInventory();}
+			});
+		
 		}
 		
 		var gl;

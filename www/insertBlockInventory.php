@@ -15,4 +15,8 @@
 	mysql_query("INSERT INTO BlockInventory (xpos, ypos, zpos, inventoryID, slotNum, item, quantity) 
 	                        VALUES ($x,$y,$z,$inv,$slot,$item,$num)");
 	
+	$result = array('result' => 1);
+	
+	echo json_encode($result);
+	
 ?>
