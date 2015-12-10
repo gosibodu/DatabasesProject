@@ -2,8 +2,8 @@
 	include_once "global.php";
 	
 	mysql_connect($mysql_host,$mysql_user,$mysql_password) or die(mysql_error());
-    mysql_select_db($mysql_database) or die(mysql_error());
-		
+	mysql_select_db($mysql_database) or die(mysql_error());
+	
 	$result = mysql_query("SELECT O.name, MAX(COUNT(*)) FROM BlockInstance B, Object O WHERE B.objectID = O.objectID GROUP BY O.name");
 	
 	$data = array();
@@ -13,5 +13,4 @@
 	}
 	
 	echo json_encode($data);
-
 ?>
