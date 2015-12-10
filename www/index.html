@@ -218,6 +218,21 @@
 			});
 		}
 		
+		function getBlockCount() {
+			$.ajax({
+				url: 'countBlocks.php',
+				data: "",
+				dataType: 'json',
+				success: function(data)
+				{
+				  for (var i in data) {
+				    var row = data[i];
+				    console.log(blockDict.getName[row[0]] + ": " + row[1]);
+				  }
+				}
+			});
+		}
+		
 		function initInventory () {
 		  var html = "";
 		  for (var i = 0; i < 3; i++)
