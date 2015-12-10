@@ -38,313 +38,304 @@
 
 
 <script type="text/javascript">
-		var blockDict = {getID : {}, getName : {}, hasInventory : {}};
-		var itemDict = {getID : {}, getName : {}, getEffects : {}};
-		function initDataIndexes() {
-			$.ajax({
-				url: 'getBlockDict.php',
-				data: "",
-				dataType: 'json',
-				success: function(data)
-				{
-				  for (var i in data) {
-				    var row = data[i];
-				      blockDict.getName[row[0]] = row[1];
-				      blockDict.getID[row[1]] = row[0];
-				      blockDict.hasInventory[row[0]] = row[2];
-				  }
-				}
-			});
-			$.ajax({
-				url: 'getItemDict.php',
-				data: "",
-				dataType: 'json',
-				success: function(data)
-				{
-				  for (var i in data) {
-				    var row = data[i];
-			      itemDict.getName[row[0]] = row[1];
-			      itemDict.getID[row[1]] = row[0];
-			      if (row[2]) {
-			        if (itemDict.getEffects[row[0]] == undefined)
-				        itemDict.getEffects[row[0]]= {};
-			        itemDict.getEffects[row[0]][row[2]] = row[3];
-			      }
-				  }
-				}
-			});
-		}
-		
-		function updateTable(){
-  		var objectName;
-      $("#xpos").html(selX);
-      $("#ypos").html(selY);
-      $("#zpos").html(selZ);
-		  objectName = blockDict.getName[(selIndex == -1) ? 0 : blocks[selIndex].id];
-			$("#blockname").html(objectName);
-		}
-		/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		  var mouseDown = false;
-  var lastMouseX = 45;
-  var lastMouseY = 45;
-
-  var worldRotationMatrix = mat4.create();
-  mat4.identity(worldRotationMatrix);
-
-  function handleMouseDown(event) {
-    mouseDown = true;
-    lastMouseX = event.clientX;
-    lastMouseY = event.clientY;
-  }
-
-  function handleMouseUp(event) {
-    mouseDown = false;
-  }
-
-  function handleMouseMove(event) {
-    if (!mouseDown) {
-      return;
+    var blockDict = {getID : {}, getName : {}, hasInventory : {}};
+    var itemDict = {getID : {}, getName : {}, getEffects : {}};
+    function initDataIndexes() {
+        $.ajax({
+            url: 'getBlockDict.php',
+            data: "",
+            dataType: 'json',
+            success: function(data) {
+                for (var i in data) {
+                    var row = data[i];
+                    blockDict.getName[row[0]] = row[1];
+                    blockDict.getID[row[1]] = row[0];
+                    blockDict.hasInventory[row[0]] = row[2];
+                }
+            }
+        });
+        $.ajax({
+            url: 'getItemDict.php',
+            data: "",
+            dataType: 'json',
+            success: function(data) {
+                for (var i in data) {
+                    var row = data[i];
+                    itemDict.getName[row[0]] = row[1];
+                    itemDict.getID[row[1]] = row[0];
+                    if (row[2]) {
+                        if (itemDict.getEffects[row[0]] == undefined)
+                        itemDict.getEffects[row[0]]= {};
+                        itemDict.getEffects[row[0]][row[2]] = row[3];
+                    }
+                }
+            }
+        });
     }
-    var newX = event.clientX;
-    var newY = event.clientY;
+    
+    function updateTable() {
+    var objectName;
+        $("#xpos").html(selX);
+        $("#ypos").html(selY);
+        $("#zpos").html(selZ);
+        objectName = blockDict.getName[(selIndex == -1) ? 0 : blocks[selIndex].id];
+        $("#blockname").html(objectName);
+    }
+    
+    var mouseDown = false;
+    var lastMouseX = 45;
+    var lastMouseY = 45;
 
-    var deltaX = newX - lastMouseX;
-    var newRotationMatrix = mat4.create();
-    mat4.identity(newRotationMatrix);
-    mat4.rotate(newRotationMatrix, degToRad(deltaX / 4), [0, 1, 0]);
+    var worldRotationMatrix = mat4.create();
+    mat4.identity(worldRotationMatrix);
 
-    var deltaY = newY - lastMouseY;
-    mat4.rotate(newRotationMatrix, degToRad(deltaY / 4), [1, 0, 0]);
+    function handleMouseDown(event) {
+        mouseDown = true;
+        lastMouseX = event.clientX;
+        lastMouseY = event.clientY;
+    }
 
-    mat4.multiply(newRotationMatrix, worldRotationMatrix, worldRotationMatrix);
+    function handleMouseUp(event) {
+        mouseDown = false;
+    }
 
-    lastMouseX = newX
-    lastMouseY = newY;
-  }
-		/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		function updateTableDetails() {
-		  var html = "";
-		  if (selIndex == -1) {
-		    html = '<tr><td colspan="3"><select id="newBlock">';
-		    
-		    for( var i in blockDict.getName){
-		      var n = blockDict.getName[i];
-		      if(i != 0)
-  		      html += '<option value="' + n + '">' + n + '</option>';
-		    }
-		    
-		    html += '</select><button type="button" onclick="insertBlock()">Create Block</button></td></tr>';
-		    
-		    $("#selectedBlockDetails").html("");
-		  } else {
-		    html = '<tr><td colspan="3"><select id="modifyBlock">';
-		    
-		    for( var i in blockDict.getName){
-		      var n = blockDict.getName[i];
-		      if(i != 0)
-  		      html += '<option value="' + n + '">' + n + '</option>';
-		    }
-		    
-		    html += '</select><button type="button" onclick="modifyBlock()">Change Block</button>';
-		    html += '<button type="button" onclick="deleteBlock()">Delete Block</button></td></tr>';
-		    
-		    getBlockInfo(blocks[selIndex].id);
-		  }
-		  $("#editSelectionControl").html(html);
-		}
-		
-		function insertBlock() {
-		  var id = blockDict.getID[$("#newBlock :selected").text()];
-		  
-			$.ajax({
-			  type: "GET",
-				url: "insertBlock.php",
-				data: {"id" : id,
-				      "x" : selX,
-				      "y" : selY,
-				      "z" : selZ},
-				dataType: 'String',
-				success: function(data){}
-			});
-		}
-		
-		function modifyBlock() {
-		  var id = blockDict.getID[$("#modifyBlock :selected").text()];
-		  
-			$.ajax({
-			  type: "GET",
-				url: "modifyBlock.php",
-				data: {"id" : id,
-				      "x" : selX,
-				      "y" : selY,
-				      "z" : selZ},
-				dataType: 'String',
-				success: function(data){}
-			});
-		}
-		
-		function deleteBlock() {
-		  $.ajax({
-			  type: "GET",
-				url: "deleteBlock.php",
-				data: {"x" : selX,
-				      "y" : selY,
-				      "z" : selZ},
-				dataType: 'String',
-				success: function(data){}
-			});
-		}
-		
-		function getBlockInfo(objectID) {
-		  $.ajax({
-			  type: "GET",
-				url: "getBlockInfo.php",
-				data: {"id" : objectID},
-				dataType: 'json',
-				success: function(data){
-				  var html = '';
-				  var bool = {0:"FALSE",1:"TRUE"};
-				  for (var i in data) {
-				    row = data[i];
-				    html += '<tr><td>stackSize</td><td colspan="2">' + row[1] + '</td></tr>';
-				    html += '<tr><td>damage</td><td colspan="2">' + row[2] + '</td></tr>';
-				    html += '<tr><td>flowRate</td><td colspan="2">' + row[3] + '</td></tr>';
-				    html += '<tr><td>slows</td><td colspan="2">' + row[4] + '</td></tr>';
-				    html += '<tr><td>falls</td><td colspan="2">' + bool[row[5]] + '</td></tr>';
-				    html += '<tr><td>hasInventory</td><td colspan="2">' + bool[row[6]] + '</td></tr>';
-				  }
-				  $('#selectedBlockDetails').html(html);
-				}
-			});
-		}
-		
-		function getBlockCount() {
-			$.ajax({
-				url: 'countBlocks.php',
-				data: "",
-				dataType: 'json',
-				success: function(data)
-				{
-				  for (var i in data) {
-				    var row = data[i];
-				    console.log(blockDict.getName[row[0]] + ": " + row[1]);
-				  }
-				}
-			});
-		}
-		
-		function initInventory () {
-		  var html = "";
-		  for (var i = 0; i < 3; i++)
-		  {
-		    html += '<tr>';
-		    for (var j = 0; j < 10; j++)
-		      html += '<td id="slot' + (i*10 + j) +'" class="inventorySlot" value="'+ (i*10 + j) +'"></td>';
-		    html += '</tr>';
-		  }
-		  
-		  $("#itemArea").html(html);
-		  clearInventoryTable();
-		}
-		
-		var currentInventory = {};
-		function getBlockInventory () {
-		  if (selIndex != -1 && blockDict.hasInventory[blocks[selIndex].id] == 1) {
-		    $.ajax({
-			    type: "GET",
-				  url: "getBlockInventory.php",
-				  data: {"x" : selX,
-				        "y" : selY,
-				        "z" : selZ},
-				  dataType: 'json',
-				  success: function(data){
-				    for (var i in data)
-				    {
-				      var row = data[i];
-				      $("#slot" + row[1]).html('<img src="img/' + row[2] +'.png">');
-				      currentInventory[row[1]] = {"id" : row[2], "damage" : row[3], "quantity" : row[4], "stackSize" : row[5]};
-				    }
-				  }
-			  });
-		  } else {
-		    clearInventoryTable();
-		  }
-		}
-		
-		function clearInventoryTable (){
-		  $(".inventorySlot").html(" ");
-		  resetItemDetails();
-		}
-		
-		function resetItemDetails(){
-		  $("#itemName").html("-");
-		  $("#itemDamage").html("-");
-		  $("#itemQuantity").html("-");
-		  $("#itemStackSize").html("-");
-		  $("#effectTable").html(" ");
-		}
-		
-		function getSlotInfo (slot) {
-		  if (currentInventory[slot] != undefined) {
-		    item = currentInventory[slot];
-		    $("#itemName").html(itemDict.getName[item.id]);
-		    $("#itemDamage").html(item.damage);
-		    $("#itemQuantity").html(item.quantity);
-		    $("#itemStackSize").html(item.stackSize);
-		    
-		    if (itemDict.getEffects[item.id] != undefined) {
-		      var html = "";
-		      var efx = itemDict.getEffects[item.id];
-		      
-		      html += '<tr><td colspan="3"><strong>Effects</strong></td></tr>'
-		      
-		      for (var e in efx){
-		        html += '<tr><td colspan="2">';
-		        html += e;
-		        html += '</td><td>';
-		        html += efx[e];
-		        html += '</td></tr>';
-		      }
-		      $("#effectTable").html(html);
-		    } else {
-		      $("#effectTable").html(" ");
-		    }
-		  } else {
-		    resetItemDetails();
-		  }
-		}
-		
-		function insertItemInBlock(slotNum, itemID, qty) {
-		  $.ajax({
-			  type: "GET",
-				url: "insertBlockInventory.php",
-				data: {"x" : selX,
-				      "y" : selY,
-				      "z" : selZ,
-				      "inv": 0,
-				      "slot": slotNum,
-				      "item": itemID,
-				      "qty": qty},
-				dataType: 'json',
-				success: function(data){ getBlockInventory();}
-			});
-		
-		}
-		
-		var gl;
+    function handleMouseMove(event) {
+        if (!mouseDown) {
+            return;
+        }
+        var newX = event.clientX;
+        var newY = event.clientY;
 
+        var deltaX = newX - lastMouseX;
+        var newRotationMatrix = mat4.create();
+        mat4.identity(newRotationMatrix);
+        mat4.rotate(newRotationMatrix, degToRad(deltaX / 4), [0, 1, 0]);
+
+        var deltaY = newY - lastMouseY;
+        mat4.rotate(newRotationMatrix, degToRad(deltaY / 4), [1, 0, 0]);
+
+        mat4.multiply(newRotationMatrix, worldRotationMatrix, worldRotationMatrix);
+
+        lastMouseX = newX
+        lastMouseY = newY;
+    }
+    
+    function updateTableDetails() {
+        var html = "";
+        if (selIndex == -1) {
+            html = '<tr><td colspan="3"><select id="newBlock">';
+
+            for(var i in blockDict.getName) {
+                var n = blockDict.getName[i];
+                if(i != 0)
+                html += '<option value="' + n + '">' + n + '</option>';
+            }
+
+            html += '</select><button type="button" onclick="insertBlock()">Create Block</button></td></tr>';
+
+            $("#selectedBlockDetails").html("");
+        } else {
+            html = '<tr><td colspan="3"><select id="modifyBlock">';
+
+            for(var i in blockDict.getName) {
+                var n = blockDict.getName[i];
+                if(i != 0)
+                html += '<option value="' + n + '">' + n + '</option>';
+            }
+
+            html += '</select><button type="button" onclick="modifyBlock()">Change Block</button>';
+            html += '<button type="button" onclick="deleteBlock()">Delete Block</button></td></tr>';
+
+            getBlockInfo(blocks[selIndex].id);
+        }
+        $("#editSelectionControl").html(html);
+    }
+    
+    function insertBlock() {
+        var id = blockDict.getID[$("#newBlock :selected").text()];
+
+        $.ajax({
+            type: "GET",
+            url: "insertBlock.php",
+            data: {"id" : id,
+                    "x" : selX,
+                    "y" : selY,
+                    "z" : selZ},
+            dataType: 'String',
+            success: function(data){}
+        });
+    }
+
+    function modifyBlock() {
+        var id = blockDict.getID[$("#modifyBlock :selected").text()];
+
+        $.ajax({
+            type: "GET",
+            url: "modifyBlock.php",
+            data: {"id" : id,
+                    "x" : selX,
+                    "y" : selY,
+                    "z" : selZ},
+            dataType: 'String',
+            success: function(data){}
+        });
+    }
+
+    function deleteBlock() {
+        $.ajax({
+        type: "GET",
+        url: "deleteBlock.php",
+        data: {"x" : selX,
+                "y" : selY,
+                "z" : selZ},
+        dataType: 'String',
+        success: function(data){}
+        });
+    }
+
+    function getBlockInfo(objectID) {
+        $.ajax({
+            type: "GET",
+            url: "getBlockInfo.php",
+            data: {"id" : objectID},
+            dataType: 'json',
+            success: function(data){
+                var html = '';
+                var bool = {0:"FALSE",1:"TRUE"};
+                for (var i in data) {
+                    row = data[i];
+                    html += '<tr><td>stackSize</td><td colspan="2">' + row[1] + '</td></tr>';
+                    html += '<tr><td>damage</td><td colspan="2">' + row[2] + '</td></tr>';
+                    html += '<tr><td>flowRate</td><td colspan="2">' + row[3] + '</td></tr>';
+                    html += '<tr><td>slows</td><td colspan="2">' + row[4] + '</td></tr>';
+                    html += '<tr><td>falls</td><td colspan="2">' + bool[row[5]] + '</td></tr>';
+                    html += '<tr><td>hasInventory</td><td colspan="2">' + bool[row[6]] + '</td></tr>';
+                }
+                $('#selectedBlockDetails').html(html);
+            }
+        });
+    }
+
+    function getBlockCount() {
+        $.ajax({
+            url: 'countBlocks.php',
+            data: "",
+            dataType: 'json',
+            success: function(data) {
+                for (var i in data) {
+                    var row = data[i];
+                    console.log(blockDict.getName[row[0]] + ": " + row[1]);
+                }
+            }
+        });
+    }
+
+    function initInventory () {
+        var html = "";
+        for (var i = 0; i < 3; i++) {
+            html += '<tr>';
+            for (var j = 0; j < 10; j++)
+                html += '<td id="slot' + (i*10 + j) +'" class="inventorySlot" value="'+ (i*10 + j) +'"></td>';
+            html += '</tr>';
+        }
+
+        $("#itemArea").html(html);
+        clearInventoryTable();
+    }
+
+    var currentInventory = {};
+    function getBlockInventory () {
+        if (selIndex != -1 && blockDict.hasInventory[blocks[selIndex].id] == 1) {
+            $.ajax({
+                type: "GET",
+                url: "getBlockInventory.php",
+                data: {"x" : selX,
+                        "y" : selY,
+                        "z" : selZ},
+                dataType: 'json',
+                success: function(data) {
+                    for (var i in data) {
+                        var row = data[i];
+                        $("#slot" + row[1]).html('<img src="img/' + row[2] +'.png">');
+                        currentInventory[row[1]] = {"id" : row[2], "damage" : row[3], "quantity" : row[4], "stackSize" : row[5]};
+                    }
+                }
+            });
+        } else {
+            clearInventoryTable();
+        }
+    }
+
+    function clearInventoryTable (){
+        $(".inventorySlot").html(" ");
+        resetItemDetails();
+    }
+
+    function resetItemDetails() {
+        $("#itemName").html("-");
+        $("#itemDamage").html("-");
+        $("#itemQuantity").html("-");
+        $("#itemStackSize").html("-");
+        $("#effectTable").html(" ");
+    }
+
+    function getSlotInfo (slot) {
+        if (currentInventory[slot] != undefined) {
+            item = currentInventory[slot];
+            $("#itemName").html(itemDict.getName[item.id]);
+            $("#itemDamage").html(item.damage);
+            $("#itemQuantity").html(item.quantity);
+            $("#itemStackSize").html(item.stackSize);
+
+            if (itemDict.getEffects[item.id] != undefined) {
+                var html = "";
+                var efx = itemDict.getEffects[item.id];
+
+                html += '<tr><td colspan="3"><strong>Effects</strong></td></tr>'
+
+                for (var e in efx){
+                    html += '<tr><td colspan="2">';
+                    html += e;
+                    html += '</td><td>';
+                    html += efx[e];
+                    html += '</td></tr>';
+                }
+                $("#effectTable").html(html);
+            } else {
+                $("#effectTable").html(" ");
+            }
+        } else {
+            resetItemDetails();
+        }
+    }
+
+    function insertItemInBlock(slotNum, itemID, qty) {
+        $.ajax({
+            type: "GET",
+            url: "insertBlockInventory.php",
+            data: {"x" : selX,
+                    "y" : selY,
+                    "z" : selZ,
+                    "inv": 0,
+                    "slot": slotNum,
+                    "item": itemID,
+                    "qty": qty},
+            dataType: 'json',
+            success: function(data){ getBlockInventory();}
+        });
+    }
+
+    var gl;
     function initGL(canvas) {
         try {
             gl = canvas.getContext("experimental-webgl");
             gl.viewportWidth = canvas.width;
             gl.viewportHeight = canvas.height;
-        } catch (e) {
-        }
+        } catch (e) {}
         if (!gl) {
             alert("Could not initialise WebGL, sorry :-(");
         }
     }
-
 
     function getShader(gl, id) {
         var shaderScript = document.getElementById(id);
@@ -381,9 +372,7 @@
         return shader;
     }
 
-
     var shaderProgram;
-
     function initShaders() {
         var fragmentShader = getShader(gl, "shader-fs");
         var vertexShader = getShader(gl, "shader-vs");
@@ -410,7 +399,6 @@
         shaderProgram.samplerUniform = gl.getUniformLocation(shaderProgram, "uSampler");
     }
 
-
     function handleLoadedTexture(texture) {
         gl.bindTexture(gl.TEXTURE_2D, texture);
         gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
@@ -420,9 +408,7 @@
         gl.bindTexture(gl.TEXTURE_2D, null);
     }
 
-
     var blockTextures = [];
-
     function initTexture(blockID) {
         blockTextures[blockID] = gl.createTexture();
         blockTextures[blockID].image = new Image();
@@ -432,7 +418,6 @@
 
         blockTextures[blockID].image.src = "img/" + blockID +".png";
     }
-
 
     var mvMatrix = mat4.create();
     var mvMatrixStack = [];
@@ -451,12 +436,10 @@
         mvMatrix = mvMatrixStack.pop();
     }
 
-
     function setMatrixUniforms() {
         gl.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, pMatrix);
         gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, mvMatrix);
     }
-
 
     function degToRad(degrees) {
         return degrees * Math.PI / 180;
@@ -513,41 +496,41 @@
         cubeVertexTextureCoordBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, cubeVertexTextureCoordBuffer);
         var textureCoords = [
-          // Front face
-          0.0, 0.0,
-          1.0, 0.0,
-          1.0, 1.0,
-          0.0, 1.0,
+            // Front face
+            0.0, 0.0,
+            1.0, 0.0,
+            1.0, 1.0,
+            0.0, 1.0,
 
-          // Back face
-          1.0, 0.0,
-          1.0, 1.0,
-          0.0, 1.0,
-          0.0, 0.0,
+            // Back face
+            1.0, 0.0,
+            1.0, 1.0,
+            0.0, 1.0,
+            0.0, 0.0,
 
-          // Top face
-          0.0, 1.0,
-          0.0, 0.0,
-          1.0, 0.0,
-          1.0, 1.0,
+            // Top face
+            0.0, 1.0,
+            0.0, 0.0,
+            1.0, 0.0,
+            1.0, 1.0,
 
-          // Bottom face
-          1.0, 1.0,
-          0.0, 1.0,
-          0.0, 0.0,
-          1.0, 0.0,
+            // Bottom face
+            1.0, 1.0,
+            0.0, 1.0,
+            0.0, 0.0,
+            1.0, 0.0,
 
-          // Right face
-          1.0, 0.0,
-          1.0, 1.0,
-          0.0, 1.0,
-          0.0, 0.0,
+            // Right face
+            1.0, 0.0,
+            1.0, 1.0,
+            0.0, 1.0,
+            0.0, 0.0,
 
-          // Left face
-          0.0, 0.0,
-          1.0, 0.0,
-          1.0, 1.0,
-          0.0, 1.0,
+            // Left face
+            0.0, 0.0,
+            1.0, 0.0,
+            1.0, 1.0,
+            0.0, 1.0,
         ];
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(textureCoords), gl.STATIC_DRAW);
         cubeVertexTextureCoordBuffer.itemSize = 2;
@@ -569,87 +552,80 @@
     }
     
     function drawBlock (blockID) {
-      gl.bindBuffer(gl.ARRAY_BUFFER, cubeVertexPositionBuffer);
-      gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, cubeVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
+        gl.bindBuffer(gl.ARRAY_BUFFER, cubeVertexPositionBuffer);
+        gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, cubeVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
 
-      gl.bindBuffer(gl.ARRAY_BUFFER, cubeVertexTextureCoordBuffer);
-      gl.vertexAttribPointer(shaderProgram.textureCoordAttribute, cubeVertexTextureCoordBuffer.itemSize, gl.FLOAT, false, 0, 0);
+        gl.bindBuffer(gl.ARRAY_BUFFER, cubeVertexTextureCoordBuffer);
+        gl.vertexAttribPointer(shaderProgram.textureCoordAttribute, cubeVertexTextureCoordBuffer.itemSize, gl.FLOAT, false, 0, 0);
 
-      if(blockTextures[blockID] == null) {
-        initTexture(blockID);
-      }
+        if(blockTextures[blockID] == null) {
+            initTexture(blockID);
+        }
 
-      gl.activeTexture(gl.TEXTURE0);
-      gl.bindTexture(gl.TEXTURE_2D, blockTextures[blockID]);
-      gl.uniform1i(shaderProgram.samplerUniform, 0);
+        gl.activeTexture(gl.TEXTURE0);
+        gl.bindTexture(gl.TEXTURE_2D, blockTextures[blockID]);
+        gl.uniform1i(shaderProgram.samplerUniform, 0);
 
-      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, cubeVertexIndexBuffer);
-      setMatrixUniforms();
-      gl.drawElements(gl.TRIANGLES, cubeVertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
-
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, cubeVertexIndexBuffer);
+        setMatrixUniforms();
+        gl.drawElements(gl.TRIANGLES, cubeVertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
     }
     
     function Block(blockID, x, y, z) {
-      this.xpos = 2*x;
-      this.ypos = 2*y;
-      this.zpos = 2*z;
-      this.id = blockID;
+        this.xpos = 2*x;
+        this.ypos = 2*y;
+        this.zpos = 2*z;
+        this.id = blockID;
     }
     
     Block.prototype.draw = function() {
-      mvPushMatrix();
-      
-      mat4.translate(mvMatrix, [this.xpos, this.ypos, this.zpos]);
-      drawBlock(this.id);
-      
-      mvPopMatrix();
+        mvPushMatrix();
+
+        mat4.translate(mvMatrix, [this.xpos, this.ypos, this.zpos]);
+        drawBlock(this.id);
+
+        mvPopMatrix();
     };
 
     var blocks = [];
-		var selIndex = -1;
+    var selIndex = -1;
     function initWorldObjects() {
-      //Temporary list for dummy query result
-      var blocklist = [];
-            
-			$.ajax({                                      
-      url: 'getmap.php',                  //the script to call to get data          
-      data: "",                        //you can insert url argumnets here to pass to api.php
-                                       //for example "id=5&parent=6"
-      dataType: 'json',                //data format      
-      success: function(data)          //on recieve of reply
-      {
-        var out;
-        
-				for (var i in data) {
-					rowdata = data[i];
-					
-					blocklist[i] = {xpos: rowdata[0], ypos: rowdata[1], zpos: rowdata[2], id:rowdata[3]}
-				}
-				
-				selIndex = -1;
-				
-				delete blocks;
-				
-        for (var i in blocklist) {
-          blocks[i] = new Block(blocklist[i].id, blocklist[i].xpos, blocklist[i].ypos, blocklist[i].zpos)
-          if (blocks[i].xpos == 2* selX && blocks[i].ypos == 2* selY && blocks[i].zpos == 2* selZ) {
-          	selIndex = i;
-          }
+        var blocklist = [];
 
-          if (blinktime < 100) {
-            if (blocks[i].xpos == 2* selX && blocks[i].ypos == 2* selY && blocks[i].zpos == 2* selZ) {
+        $.ajax({                                      
+            url: 'getmap.php',
+            data: "",
+            dataType: 'json',
+            success: function(data) {
+                var out;
 
-							blocks[i] = new Block(-1, selX, selY, selZ);
-            } else {
+                for (var i in data) {
+                    rowdata = data[i];
+                    blocklist[i] = {xpos: rowdata[0], ypos: rowdata[1], zpos: rowdata[2], id:rowdata[3]}
+                }
 
-              blocks[-1] = new Block(-1, selX, selY, selZ);
+                selIndex = -1;
+
+                delete blocks;
+
+                for (var i in blocklist) {
+                        blocks[i] = new Block(blocklist[i].id, blocklist[i].xpos, blocklist[i].ypos, blocklist[i].zpos)
+                        if (blocks[i].xpos == 2* selX && blocks[i].ypos == 2* selY && blocks[i].zpos == 2* selZ) {
+                            selIndex = i;
+                        }
+
+                    if (blinktime < 100) {
+                        if (blocks[i].xpos == 2* selX && blocks[i].ypos == 2* selY && blocks[i].zpos == 2* selZ) {
+                            blocks[i] = new Block(-1, selX, selY, selZ);
+                        } else {
+                            blocks[-1] = new Block(-1, selX, selY, selZ);
+                        }
+                    } else {
+                        delete blocks[-1];
+                    }
+                }
             }
-          } else {
-            delete blocks[-1];
-          }
-        }
-      } 
-			});
+        });
     }
     
     var selX = 0;
@@ -669,66 +645,58 @@
         mat4.multiply(mvMatrix, worldRotationMatrix);
         
         for(var i in blocks) {
-          blocks[i].draw();
+            blocks[i].draw();
         }
-        
-
     }
 
     var currentlyPressedKeys = {};
     var ar=new Array(33,34,35,36,37,38,39,40);
 
     $(document).keydown(function(e) {
-         var key = e.which;
-          //console.log(key);
-          //if(key==35 || key == 36 || key == 37 || key == 39)
-          if($.inArray(key,ar) > -1) {
-              e.preventDefault();
-              return false;
-          }
-          return true;
+        var key = e.which;
+        if($.inArray(key,ar) > -1) {
+            e.preventDefault();
+            return false;
+        }
+        return true;
     });
     
     $(document).on('click', '.inventorySlot', function(e) {
-      getSlotInfo($(this).attr("value"));
+        getSlotInfo($(this).attr("value"));
     });
     
     function handleKeyDown(event) {
-      currentlyPressedKeys[event.keyCode] = true;
-      if (currentlyPressedKeys[33]) {
-        // Page Up
-        selZ += 1;
-      }
-      if (currentlyPressedKeys[34]) {
-        // Page Down
-        selZ -= 1;
-      }
-      if (currentlyPressedKeys[37]) {
-        // Left cursor key
-        selX -= 1;
-      }
-      if (currentlyPressedKeys[39]) {
-        // Right cursor key
-        selX += 1;
-      }
-      if (currentlyPressedKeys[38]) {
-        // Up cursor key
-        selY += 1;
-      }
-      if (currentlyPressedKeys[40]) {
-        // Down cursor key
-        selY -= 1;
-      }
+        currentlyPressedKeys[event.keyCode] = true;
+        if (currentlyPressedKeys[33]) {
+            // Page Up
+            selZ += 1;
+        }
+        if (currentlyPressedKeys[34]) {
+            // Page Down
+            selZ -= 1;
+        }
+        if (currentlyPressedKeys[37]) {
+            // Left cursor key
+            selX -= 1;
+        }
+        if (currentlyPressedKeys[39]) {
+            // Right cursor key
+            selX += 1;
+        }
+        if (currentlyPressedKeys[38]) {
+            // Up cursor key
+            selY += 1;
+        }
+        if (currentlyPressedKeys[40]) {
+            // Down cursor key
+            selY -= 1;
+        }
     }
 
     function handleKeyUp(event) {
-      currentlyPressedKeys[event.keyCode] = false;
-      updateTableDetails();
-      getBlockInventory();
-    }
-
-    function handleKeys() {
-
+        currentlyPressedKeys[event.keyCode] = false;
+        updateTableDetails();
+        getBlockInventory();
     }
 
     var lastTime = 0;
@@ -736,17 +704,13 @@
         var timeNow = new Date().getTime();
         if (lastTime != 0) {
             var elapsed = timeNow - lastTime;
-
             blinktime = (blinktime + elapsed) % 1000;
-
         }
         lastTime = timeNow;
     }
 
-
     function tick() {
         requestAnimFrame(tick);
-        handleKeys();
         initWorldObjects();
         drawScene();
         updateTable();
@@ -764,25 +728,24 @@
         initInventory();
         drawScene();
         
-    var newRotationMatrix = mat4.create();
-    mat4.identity(newRotationMatrix);
-    mat4.rotate(newRotationMatrix, degToRad(-45), [1, 0, 0]);
-    mat4.rotate(newRotationMatrix, degToRad(45), [0, 0, 1]);
-    mat4.multiply(newRotationMatrix, worldRotationMatrix, worldRotationMatrix);
-
+        var newRotationMatrix = mat4.create();
+        mat4.identity(newRotationMatrix);
+        mat4.rotate(newRotationMatrix, degToRad(-45), [1, 0, 0]);
+        mat4.rotate(newRotationMatrix, degToRad(45), [0, 0, 1]);
+        mat4.multiply(newRotationMatrix, worldRotationMatrix, worldRotationMatrix);
+    
         gl.clearColor(0.0, 0.0, 0.0, 1.0);
         gl.enable(gl.DEPTH_TEST);
         
         document.onkeydown = handleKeyDown;
         document.onkeyup = handleKeyUp;
-        
-   canvas.onmousedown = handleMouseDown;
-    document.onmouseup = handleMouseUp;
-    document.onmousemove = handleMouseMove;
+            
+        canvas.onmousedown = handleMouseDown;
+        document.onmouseup = handleMouseUp;
+        document.onmousemove = handleMouseMove;
     
         tick();
     }
-
 
 </script>
 
@@ -797,65 +760,65 @@
     <li>David Strickland</li>
   </ul>
 
-	<div id="top">
+    <div id="top">
     <canvas id="main_window" width="500" height="500"></canvas>
-	  <table id="detailsTable" border="1" height="520">
-			<thead>
-				<tr>
-					<th colspan="3">Block Details</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr>
-					<td>X Position</td>
-					<td>Y Position</td>
-					<td>Z Position</td>
-				</tr>
-				<tr>
-					<td id = "xpos">0</td>
-					<td id = "ypos">0</td>
-					<td id = "zpos">0</td>
-				</tr>
-				<tr>
-					<td id ="blockname" colspan="3">Block Name</td>
-				</tr>
-			</tbody>
-			<tbody id="editSelectionControl"></tbody>
-			<tbody id="selectedBlockDetails"></tbody>
-		</table>
-	<div>
-	<div>
-	  <table id="inventoryTable" border="1">
-			<thead>
-				<tr>
-					<th colspan="10">Inventory</th>
-				</tr>
-			</thead>
-	    <tbody id="itemArea"><tbody>
-	  </table>
-	  <table id="inventoryControl" border="1">
-			<thead>
-				<tr>
-					<th colspan="3">Item Details</th>
-				</tr>
-			</thead>
-	    <tbody>
-	      <tr>
-	        <td colspan="1">Item Name</td>
-	        <td id="itemName" colspan="2"></td>
-	      </tr>
-	      <tr>
-	        <td>damage</td>
-	        <td>quantity</td>
-	        <td>stackSize</td>
-	      </tr>
-	      <tr>
-	        <td id="itemDamage" ></td>
-	        <td id="itemQuantity" ></td>
-	        <td id="itemStackSize" ></td>
-	      </tr>
-	    </tbody>
-	    <tbody id=effectTable></tbody>
-	  </table>
-	</div>
+        <table id="detailsTable" border="1" height="520">
+            <thead>
+                <tr>
+                    <th colspan="3">Block Details</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>X Position</td>
+                    <td>Y Position</td>
+                    <td>Z Position</td>
+                </tr>
+                <tr>
+                    <td id = "xpos">0</td>
+                    <td id = "ypos">0</td>
+                    <td id = "zpos">0</td>
+                </tr>
+                <tr>
+                    <td id ="blockname" colspan="3">Block Name</td>
+                </tr>
+            </tbody>
+            <tbody id="editSelectionControl"></tbody>
+            <tbody id="selectedBlockDetails"></tbody>
+        </table>
+    </div>
+    <div>
+        <table id="inventoryTable" border="1">
+            <thead>
+                <tr>
+                    <th colspan="10">Inventory</th>
+                </tr>
+            </thead>
+            <tbody id="itemArea"><tbody>
+        </table>
+        <table id="inventoryControl" border="1">
+            <thead>
+                <tr>
+                    <th colspan="3">Item Details</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td colspan="1">Item Name</td>
+                    <td id="itemName" colspan="2"></td>
+                </tr>
+                <tr>
+                    <td>damage</td>
+                    <td>quantity</td>
+                    <td>stackSize</td>
+                </tr>
+                <tr>
+                    <td id="itemDamage" ></td>
+                    <td id="itemQuantity" ></td>
+                    <td id="itemStackSize" ></td>
+                </tr>
+            </tbody>
+            <tbody id=effectTable></tbody>
+        </table>
+    </div>
 </body>
